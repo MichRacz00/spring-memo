@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### JSON files for storage
+src/main/resources/*.json
