@@ -54,22 +54,6 @@ public class MemoController {
         return new ArrayList<>(memos.values());
     }
 
-    @PatchMapping("/coordinates")
-    public void updateCoordinates(@RequestBody Memo updatedMemo) {
-        try {
-            memos.remove(updatedMemo.getId());
-            memos.put(updatedMemo.getId(), updatedMemo);
-            List<Memo> updatedMemos = new ArrayList<>(memos.values());
-
-            File file = new File(FILE_PATH);
-            mapper.writeValue(file, updatedMemos);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to update coordinates of a memo");
-        }
-    }
-
     @PostMapping("/")
     public Memo addNew(@RequestBody Memo newMemo) {
         try {
@@ -88,6 +72,36 @@ public class MemoController {
             nextId--;
             e.printStackTrace();
             throw new RuntimeException("Failed to save memo");
+        }
+    }
+
+    @PatchMapping("/coordinates")
+    public void updateCoordinates(@RequestBody Memo updatedMemo) {
+        try {
+            memos.remove(updatedMemo.getId());
+            memos.put(updatedMemo.getId(), updatedMemo);
+            List<Memo> updatedMemos = new ArrayList<>(memos.values());
+
+            File file = new File(FILE_PATH);
+            mapper.writeValue(file, updatedMemos);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update coordinates of a memo");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable int id) {
+        try {
+            memos.remove(id);
+            List<Memo> updatedMemos = new ArrayList<>(memos.values());
+
+            File file = new File(FILE_PATH);
+            mapper.writeValue(file, updatedMemos);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to delete a memo");
         }
     }
 }
