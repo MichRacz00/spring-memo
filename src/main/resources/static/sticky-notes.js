@@ -20,13 +20,28 @@ function createStickyNote(noteData) {
     noteDiv.style.left = noteData.x + "px";
     noteDiv.style.top = noteData.y + "px";
 
+    const deleteBtn = document.createElement("button");
+    deleteBtn.innerText = "×";
+    deleteBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        document.body.removeChild(noteDiv);
+
+        try {
+            await fetch(`/memo/${noteData.id}`, { method: "DELETE" });
+        } catch (err) {
+            console.error("Failed to delete memo:", err);
+        }
+    });
+
     const title = document.createElement("h4");
     title.innerText = noteData.title;
     const content = document.createElement("p");
     content.innerText = noteData.content;
 
+    noteDiv.appendChild(deleteBtn);
     noteDiv.appendChild(title);
     noteDiv.appendChild(content);
+
     document.body.appendChild(noteDiv);
 
     makeNoteDraggable(noteDiv, noteData);
@@ -75,14 +90,16 @@ async function updateCoordinates(noteData) {
 window.onload = init;
 
 const newNoteButton = document.getElementById("newNoteButton");
+const titleInput = document.getElementById("noteTitle");
+const contentInput = document.getElementById("noteContent");
 
 // Event listener for the button
 newNoteButton.addEventListener("click", async () => {
     const newMemo = {
-        title: "My new note",
-        content: "This is a sticky note!",
-        x: 50,
-        y: 50
+        title: titleInput.value,
+        content: contentInput.value,
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2
     };
 
     const response = await fetch("/memo/", {
@@ -92,7 +109,9 @@ newNoteButton.addEventListener("click", async () => {
     });
 
     const savedMemo = await response.json();
-    console.log(savedMemo);
 
     createStickyNote(savedMemo);
+
+    titleInput.value = "";
+    contentInput.value = "";
 });
