@@ -1,0 +1,59 @@
+/* ---------- General page styling ---------- */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+/* ---------- Centered dashboard content ---------- */
+.center-container {
+    display: flex;
+    flex-direction: column;       /* stack elements vertically */
+    justify-content: center;      /* vertical centering */
+    align-items: center;          /* horizontal centering */
+    height: 100vh;                /* fill the viewport */
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* ---------- Headings and paragraph ---------- */
+.center-container h2 {
+    margin-bottom: 10px;
+}
+
+.center-container p {
+    max-width: 500px;
+    margin-bottom: 20px;
+}
+
+/* ---------- Input fields ---------- */
+.center-container input,
+.center-container textarea {
+    margin-top: 10px;
+    padding: 8px;
+    width: 250px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.center-container textarea {
+    resize: vertical;
+    height: 80px;
+}
+
+button#newNoteButton {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+button#newNoteButton:hover {
+    background-color: #45a049;
+}
