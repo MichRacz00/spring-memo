@@ -54,6 +54,12 @@ public class MemoController {
         return (List<Memo>) memos.values();
     }
 
+    @PatchMapping("/coordinates")
+    public void updateCoordinates(@RequestBody Memo updatedMemo) {
+        memos.put(updatedMemo.getId(), updatedMemo);
+        System.out.println(updatedMemo.getX() + " " + updatedMemo.getY());
+    }
+
     @PostMapping("/")
     public Memo addNew(@RequestBody Memo newMemo) {
         try {

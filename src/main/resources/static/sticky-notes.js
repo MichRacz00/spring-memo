@@ -4,16 +4,10 @@ const newNoteButton = document.getElementById("newNoteButton");
 function createStickyNote(noteData) {
     const noteDiv = document.createElement("div");
     noteDiv.classList.add("sticky-note");
-    noteDiv.style.position = "absolute";
+
+    // Set position from data
     noteDiv.style.left = noteData.x + "px";
     noteDiv.style.top = noteData.y + "px";
-    noteDiv.style.width = "200px";
-    noteDiv.style.height = "150px";
-    noteDiv.style.backgroundColor = "#fffb88";
-    noteDiv.style.border = "1px solid #e0e0e0";
-    noteDiv.style.padding = "10px";
-    noteDiv.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.3)";
-    noteDiv.style.cursor = "move";
 
     const title = document.createElement("h4");
     title.innerText = noteData.title;
@@ -24,11 +18,11 @@ function createStickyNote(noteData) {
     noteDiv.appendChild(content);
     document.body.appendChild(noteDiv);
 
-    makeNoteDraggable(noteDiv);
+    makeNoteDraggable(noteDiv, noteData);
 }
 
-// Function to make a note draggable
-function makeNoteDraggable(noteDiv) {
+// Function to make a note draggable (same as before)
+function makeNoteDraggable(noteDiv, noteData) {
     noteDiv.onmousedown = function(event) {
         let shiftX = event.clientX - noteDiv.getBoundingClientRect().left;
         let shiftY = event.clientY - noteDiv.getBoundingClientRect().top;
@@ -47,12 +41,24 @@ function makeNoteDraggable(noteDiv) {
         noteDiv.onmouseup = function() {
             document.removeEventListener("mousemove", onMouseMove);
             noteDiv.onmouseup = null;
+
+            noteData.x = parseInt(noteDiv.style.left);
+            noteData.y = parseInt(noteDiv.style.top);
+            updateCoordinates(noteData);
         };
     };
 
     noteDiv.ondragstart = function() {
         return false;
     };
+}
+
+async function updateCoordinates(noteData) {
+    await fetch("/memo/coordinates", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(noteData)
+    });
 }
 
 // Event listener for the button
