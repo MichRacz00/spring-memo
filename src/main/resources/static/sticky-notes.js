@@ -1,4 +1,15 @@
-const newNoteButton = document.getElementById("newNoteButton");
+
+async function init() {
+    const response = await fetch("/memo/all", {
+        method: "GET"
+    });
+
+    const allMemos = await response.json();
+
+    allMemos.forEach(memo => {
+        createStickyNote(memo);
+    });
+}
 
 // Function to create and display a sticky note
 function createStickyNote(noteData) {
@@ -60,6 +71,10 @@ async function updateCoordinates(noteData) {
         body: JSON.stringify(noteData)
     });
 }
+
+window.onload = init;
+
+const newNoteButton = document.getElementById("newNoteButton");
 
 // Event listener for the button
 newNoteButton.addEventListener("click", async () => {
