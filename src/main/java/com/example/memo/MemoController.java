@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class MemoController {
     private final ObjectMapper mapper = new ObjectMapper();
     private final String FILE_PATH = "src/main/resources/memos.json";
 
+    private HashMap<Integer, Memo> memos = new HashMap<>();
     private int nextId = 0;
 
     @PostConstruct
@@ -39,6 +41,7 @@ public class MemoController {
             List<Memo> allMemos = mapper.readValue(file, new TypeReference<>() {});
             for (Memo memo : allMemos) {
                 nextId = max(nextId, memo.getId());
+                memos.put(memo.getId(), memo);
             }
             nextId++;
         } catch (IOException e) {
@@ -48,13 +51,7 @@ public class MemoController {
 
     @GetMapping("/all")
     public List<Memo> getAll() {
-        try {
-            File file = new File(FILE_PATH);
-            return mapper.readValue(file, new TypeReference<>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
+        return (List<Memo>) memos.values();
     }
 
     @PostMapping("/")
@@ -63,6 +60,7 @@ public class MemoController {
             File file = new File(FILE_PATH);
 
             newMemo.setId(nextId);
+            memos.put(nextId, newMemo);
             nextId++;
 
             List<Memo> memos = mapper.readValue(file, new TypeReference<>() {});
@@ -71,8 +69,9 @@ public class MemoController {
 
             return newMemo;
         } catch (IOException e) {
+            nextId--;
             e.printStackTrace();
-            throw new RuntimeException("Failed to save memo"); // Spring returns 500
+            throw new RuntimeException("Failed to save memo");
         }
     }
 }
