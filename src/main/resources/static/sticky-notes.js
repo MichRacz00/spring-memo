@@ -70,11 +70,14 @@ newNoteButton.addEventListener("click", async () => {
         y: 50
     };
 
-    await fetch("/memo/", {
+    const response = await fetch("/memo/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newMemo)
     });
 
-    createStickyNote(newMemo);
+    const savedMemo = await response.json();
+    console.log(savedMemo);
+
+    createStickyNote(savedMemo);
 });

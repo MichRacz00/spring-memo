@@ -51,13 +51,23 @@ public class MemoController {
 
     @GetMapping("/all")
     public List<Memo> getAll() {
-        return (List<Memo>) memos.values();
+        return new ArrayList<>(memos.values());
     }
 
     @PatchMapping("/coordinates")
     public void updateCoordinates(@RequestBody Memo updatedMemo) {
-        memos.put(updatedMemo.getId(), updatedMemo);
-        System.out.println(updatedMemo.getX() + " " + updatedMemo.getY());
+        try {
+            memos.remove(updatedMemo.getId());
+            memos.put(updatedMemo.getId(), updatedMemo);
+            List<Memo> updatedMemos = new ArrayList<>(memos.values());
+
+            File file = new File(FILE_PATH);
+            mapper.writeValue(file, updatedMemos);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update coordinates of a memo");
+        }
     }
 
     @PostMapping("/")
