@@ -1,11 +1,16 @@
 package com.example.memo;
 
+import com.azure.cosmos.CosmosClient;
+import com.azure.cosmos.CosmosContainer;
+import com.azure.cosmos.models.CosmosItemRequestOptions;
+import com.azure.cosmos.models.PartitionKey;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.crypto.Data;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,11 +24,16 @@ import static java.lang.Math.max;
 @RequestMapping("/memo")
 public class MemoController {
 
+    private final Database database;
     private final ObjectMapper mapper = new ObjectMapper();
     private final String FILE_PATH = "src/main/resources/memos.json";
 
     private HashMap<Integer, Memo> memos = new HashMap<>();
     private int nextId = 0;
+
+    public MemoController(Database database) {
+        this.database = database;
+    }
 
     @PostConstruct
     public void init() {
@@ -39,10 +49,6 @@ public class MemoController {
 
         try {
             List<Memo> allMemos = mapper.readValue(file, new TypeReference<>() {});
-            for (Memo memo : allMemos) {
-                nextId = max(nextId, memo.getId());
-                memos.put(memo.getId(), memo);
-            }
             nextId++;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -56,30 +62,25 @@ public class MemoController {
 
     @PostMapping("/")
     public Memo addNew(@RequestBody Memo newMemo) {
-        try {
-            File file = new File(FILE_PATH);
+        CosmosClient client = database.getCosmosClient();
+        CosmosContainer container = client.getDatabase("memo").getContainer("memo-cards");
+        newMemo.setId(nextId);
 
-            newMemo.setId(nextId);
-            memos.put(nextId, newMemo);
-            nextId++;
+        container.createItem(
+                newMemo,
+                new PartitionKey(newMemo.getId()),
+                new CosmosItemRequestOptions()
+        );
 
-            List<Memo> memos = mapper.readValue(file, new TypeReference<>() {});
-            memos.add(newMemo);
-            mapper.writeValue(file, memos);
+        nextId++;
 
-            return newMemo;
-        } catch (IOException e) {
-            nextId--;
-            e.printStackTrace();
-            throw new RuntimeException("Failed to save memo");
-        }
+        return newMemo;
     }
 
     @PatchMapping("/coordinates")
     public void updateCoordinates(@RequestBody Memo updatedMemo) {
         try {
             memos.remove(updatedMemo.getId());
-            memos.put(updatedMemo.getId(), updatedMemo);
             List<Memo> updatedMemos = new ArrayList<>(memos.values());
 
             File file = new File(FILE_PATH);
