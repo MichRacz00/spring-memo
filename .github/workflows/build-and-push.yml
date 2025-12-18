@@ -38,7 +38,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Convert repository name to lowercase
-        run: echo "REPOSITORY_LC=$(echo ${REPOSITORY}-database | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        run: echo "REPOSITORY_LC=$(echo ${REPOSITORY} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
         env:
           REPOSITORY: ${{ github.repository }}
 
