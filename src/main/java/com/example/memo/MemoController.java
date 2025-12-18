@@ -2,19 +2,17 @@ package com.example.memo;
 
 import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosContainer;
-import com.azure.cosmos.models.CosmosItemRequestOptions;
-import com.azure.cosmos.models.PartitionKey;
+import com.azure.cosmos.CosmosException;
+import com.azure.cosmos.models.*;
+import com.azure.cosmos.util.CosmosPagedIterable;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.xml.crypto.Data;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -24,85 +22,75 @@ import static java.lang.Math.max;
 @RequestMapping("/memo")
 public class MemoController {
 
-    private final Database database;
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final String FILE_PATH = "src/main/resources/memos.json";
-
-    private HashMap<Integer, Memo> memos = new HashMap<>();
-    private int nextId = 0;
+    private final CosmosContainer cosmosContainer;
 
     public MemoController(Database database) {
-        this.database = database;
-    }
-
-    @PostConstruct
-    public void init() {
-        File file = new File(FILE_PATH);
-
-        if (!file.exists() || file.length() == 0) {
-            try (FileWriter fw = new FileWriter(file)) {
-                fw.write("[]"); // initialize JSON array
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            List<Memo> allMemos = mapper.readValue(file, new TypeReference<>() {});
-            nextId++;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        CosmosClient client = database.getCosmosClient();
+        this.cosmosContainer = client.getDatabase("memo").getContainer("memo-cards");
     }
 
     @GetMapping("/all")
     public List<Memo> getAll() {
-        return new ArrayList<>(memos.values());
+        try {
+            String sql = "SELECT * FROM c";
+            CosmosPagedIterable<Memo> items = cosmosContainer.queryItems(sql,
+                    new CosmosQueryRequestOptions(), Memo.class);
+
+            List<Memo> memos = new ArrayList<>();
+            items.forEach(memos::add);
+            return memos;
+
+        } catch (Exception e) {
+            System.err.println("Error retrieving all memos: " + e.getMessage());
+            throw new RuntimeException("Failed to retrieve all memos", e);
+        }
     }
 
     @PostMapping("/")
     public Memo addNew(@RequestBody Memo newMemo) {
-        CosmosClient client = database.getCosmosClient();
-        CosmosContainer container = client.getDatabase("memo").getContainer("memo-cards");
-        newMemo.setId(nextId);
+        UUID id = UUID.randomUUID();
+        newMemo.setId(id.toString());
 
-        container.createItem(
+        cosmosContainer.createItem(
                 newMemo,
                 new PartitionKey(newMemo.getId()),
                 new CosmosItemRequestOptions()
         );
 
-        nextId++;
-
         return newMemo;
     }
 
     @PatchMapping("/coordinates")
-    public void updateCoordinates(@RequestBody Memo updatedMemo) {
+    public ResponseEntity<Object> updateCoordinates(@RequestBody Memo updatedMemo) {
+        String id = updatedMemo.getId();
+
         try {
-            memos.remove(updatedMemo.getId());
-            List<Memo> updatedMemos = new ArrayList<>(memos.values());
+            try {
+                cosmosContainer.readItem(id, new PartitionKey(id), Memo.class);
+            } catch (CosmosException e) {
+                if (e.getStatusCode() == 404) {
+                    return ResponseEntity.notFound().build();
+                }
+                throw e;
+            }
 
-            File file = new File(FILE_PATH);
-            mapper.writeValue(file, updatedMemos);
+            CosmosItemResponse<Memo> response = cosmosContainer.replaceItem(updatedMemo, id,
+                    new PartitionKey(id), new CosmosItemRequestOptions());
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to update coordinates of a memo");
+            return ResponseEntity.ok(response.getItem());
+
+        } catch (CosmosException e) {
+            System.err.println("Error updating coordinates for a memo: " + e.getMessage());
+            throw new RuntimeException("Failed to overwrite memo", e);
         }
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable int id) {
+    public void delete(@PathVariable String id) {
         try {
-            memos.remove(id);
-            List<Memo> updatedMemos = new ArrayList<>(memos.values());
-
-            File file = new File(FILE_PATH);
-            mapper.writeValue(file, updatedMemos);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to delete a memo");
+            cosmosContainer.deleteItem(id, new PartitionKey(id), new CosmosItemRequestOptions());
+        } catch (com.azure.cosmos.CosmosException e) {
+            if (e.getStatusCode() != 404) throw e;
         }
     }
 }
