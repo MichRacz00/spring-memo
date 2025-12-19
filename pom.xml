@@ -58,6 +58,20 @@
 			<artifactId>java-uuid-generator</artifactId>
 			<version>4.1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.microsoft.azure</groupId>
+			<artifactId>msal4j</artifactId>
+			<version>1.23.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.azure.spring</groupId>
+			<artifactId>spring-cloud-azure-starter</artifactId>
+			<version>5.24.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
