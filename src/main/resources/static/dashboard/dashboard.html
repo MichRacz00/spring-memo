@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Memo Dashboard</title>
+
+    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="/dashboard/dashboard.css">
+    <link rel="stylesheet" href="/dashboard/sticky-notes.css">
+</head>
+<body>
+    <div class="top-right-container">
+        <button id="logoutButton">Logout</button>
+    </div>
+
+    <div class="center-container">
+        <h2>Welcome to the sticky board dashboard!</h2>
+        <p>Insert note title and content into the text boxes and request the creation of a note with the button. All notes and their locations are saved on the server.</p>
+
+        <input type="text" id="noteTitle" placeholder="Note title" />
+        <textarea id="noteContent" placeholder="Note content"></textarea>
+        <button id="newNoteButton">New note please!</button>
+    </div>
+
+    <script src="/dashboard/sticky-notes.js"></script>
+    <script src="/dashboard/logout-redirect.js"></script>
+</body>
+</html>

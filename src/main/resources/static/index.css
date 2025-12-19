@@ -26,34 +26,20 @@ html, body {
     margin-bottom: 20px;
 }
 
-/* ---------- Input fields ---------- */
-.center-container input,
-.center-container textarea {
-    margin-top: 10px;
-    padding: 8px;
-    width: 250px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.center-container textarea {
-    resize: vertical;
-    height: 80px;
-}
-
-button#newNoteButton {
+button {
     margin-top: 10px;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
     border: none;
     border-radius: 4px;
 }
 
-button#newNoteButton:hover {
-    background-color: #45a049;
+#loginButton, #logoutButton {
+    color: white;
+    background-color: #2c99bb;
+}
+
+#loginButton:hover, #logoutButton:hover {
+    background-color: #35a2c1;
 }
