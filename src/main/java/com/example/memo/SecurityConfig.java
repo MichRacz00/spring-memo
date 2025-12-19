@@ -30,7 +30,7 @@ public class SecurityConfig  {
                 .with(AadWebApplicationHttpSecurityConfigurer.aadWebApplication(), Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/memo/**", "/dashboard").authenticated()
+                        .requestMatchers("/memo/**", "/dashboard/**", "/ui/**").authenticated()
                         .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth2 -> oauth2

@@ -17,6 +17,11 @@ spring:
         # authorization-clients:
         #   graph:
         #     scopes: https://graph.microsoft.com/User.Read
+      storage:
+        blob:
+          endpoint: https://memoblob.blob.core.windows.net/
+          account-name: memoblob
+          account-key: CA1spwwVmMNak62n5yOsSQNi2wrZveUeCyd96vgE8LxnKGtC2f3ecrwLQsG2crpWdlE3dNSIds7X+AStRk/zNg==
 
 # un-comment the following lines if you are deploying to a reverse proxy (e.g. Azure App Service)
 # server:
