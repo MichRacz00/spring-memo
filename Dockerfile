@@ -1,4 +1,8 @@
 FROM eclipse-temurin:17-jre-alpine
 COPY target/memo-0.0.1-SNAPSHOT.jar memo-server.jar
+
+ENV SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE=10MB
+ENV SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE=10MB
+
 ENTRYPOINT ["java","-jar","/memo-server.jar"]
 EXPOSE 8080

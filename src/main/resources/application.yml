@@ -21,7 +21,7 @@ spring:
         blob:
           endpoint: https://memoblob.blob.core.windows.net/
           account-name: memoblob
-          
+          account-key: HbS3mnFPVCS9Oz2O4zC0CNtwdNVE9IRzyUsdmMYI/hmfbv9QoDS2qXwr8JwnH61lSLQtGxGhJxlg+ASt8Qi/iw==
 
 # un-comment the following lines if you are deploying to a reverse proxy (e.g. Azure App Service)
 # server:
