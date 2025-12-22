@@ -87,7 +87,9 @@ async function updateCoordinates(noteData) {
     });
 }
 
-window.onload = init;
+window.addEventListener("load", () => {
+    init();
+});
 
 const newNoteButton = document.getElementById("newNoteButton");
 const titleInput = document.getElementById("noteTitle");

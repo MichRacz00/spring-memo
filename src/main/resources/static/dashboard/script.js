@@ -52,4 +52,6 @@ async function setBackground() {
     }
 }
 
-window.onload = setBackground;
+window.addEventListener("load", () => {
+    setBackground();
+});
