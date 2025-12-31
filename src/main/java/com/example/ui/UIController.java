@@ -3,6 +3,7 @@ package com.example.ui;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.sas.BlobSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.example.memo.Utilities;
@@ -52,19 +53,25 @@ public class UIController {
     @GetMapping("/background")
     public ResponseEntity<String> getBackground(@AuthenticationPrincipal OidcUser principal) {
         String blobName = principal.getAttribute("oid");
+        assert blobName != null;
         BlobClient blobClient = blobContainerClient.getBlobClient(blobName);
 
         if (!blobClient.exists()) {
             return ResponseEntity.noContent().build();
         }
 
+        BlobServiceClient serviceClient = blobContainerClient.getServiceClient();
+
+        OffsetDateTime keyStart = OffsetDateTime.now().minusMinutes(5);
+        OffsetDateTime keyExpiry = OffsetDateTime.now().plusHours(1);
+        UserDelegationKey userDelegationKey = serviceClient.getUserDelegationKey(keyStart, keyExpiry);
+
         BlobSasPermission permission = new BlobSasPermission().setReadPermission(true);
-        OffsetDateTime expiryTime = OffsetDateTime.now().plusHours(1);
 
-        BlobServiceSasSignatureValues values = new BlobServiceSasSignatureValues(expiryTime, permission)
-                .setStartTime(OffsetDateTime.now().minusMinutes(5));
+        BlobServiceSasSignatureValues values = new BlobServiceSasSignatureValues(keyExpiry, permission)
+                .setStartTime(keyStart);
 
-        String sasToken = blobClient.generateSas(values);
+        String sasToken = blobClient.generateUserDelegationSas(values, userDelegationKey);
         return ResponseEntity.ok(blobClient.getBlobUrl() + "?" + sasToken);
     }
 
