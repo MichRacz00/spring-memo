@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    azure:
+      active-directory:
+        enabled: true
+        profile:
+          tenant-id: 88728bcb-d92b-4312-9337-07087ab724f3
+        credential:
+          client-id: 58efa4d5-62e8-4b3c-82ac-b0720c84f829
+        post-logout-redirect-uri: http://localhost:8080
+      storage:
+        blob:
+          endpoint: https://memoblob.blob.core.windows.net/
