@@ -17,6 +17,7 @@ spring:
       storage:
         blob:
           endpoint: https://memoblob.blob.core.windows.net/
+        account-name: memoblob
       appconfiguration:
         stores:
           - endpoint: https://memo-config.azconfig.io
