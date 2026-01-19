@@ -85,4 +85,51 @@ resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =
   }
 }
 
+resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
+  name: 'cosmos-${appName}-${uniqueString(resourceGroup().id)}'
+  location: location
+  kind: 'GlobalDocumentDB'
+  properties: {
+    databaseAccountOfferType: 'Standard'
+    capabilities: [
+      { name: 'EnableServerless' }
+    ]
+    locations: [
+      {
+        locationName: location
+        failoverPriority: 0
+        isZoneRedundant: false
+      }
+    ]
+    consistencyPolicy: {
+      defaultConsistencyLevel: 'Session'
+    }
+  }
+}
+
+resource cosmosDb 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2023-04-15' = {
+  parent: cosmosAccount
+  name: 'memo'
+  properties: {
+    resource: { id: 'memo' }
+  }
+}
+
+resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDb
+  name: 'memo-cards'
+  properties: {
+    resource: {
+      id: 'memos-cards'
+      partitionKey: { paths: ['/userId'], kind: 'Hash' }
+    }
+  }
+}
+
+resource cosmosDatabaseKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: keyVault
+  name: 'database-key'
+  properties: { value: cosmosAccount.listKeys().primaryMasterKey }
+}
+
 output url string = app.properties.configuration.ingress.fqdn
