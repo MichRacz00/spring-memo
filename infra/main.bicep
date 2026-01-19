@@ -13,7 +13,7 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
     retentionInDays: 30
     // Daily cap ensures logs do not exceed the free 5GB limit
     workspaceCapping: {
-      dailyQuotaGb: 0.19
+      dailyQuotaGb: 1
     }
   }
 }
@@ -51,7 +51,7 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
         {
           name: appName
           image: containerImage
-          resources: { cpu: 0.25, memory: '0.5Gi' }
+          resources: { cpu: json('0.25'), memory: '0.5Gi' }
         }
       ]
       scale: {
