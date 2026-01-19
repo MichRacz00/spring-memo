@@ -4,8 +4,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Store client secret for entra ID localy
 application.yml
-src/main/resources/bootstrap.properties
 
 ### STS ###
 .apt_generated
