@@ -133,7 +133,7 @@ resource cosmosDatabaseKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
 }
 
 resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
-  name: 'blobstorage-${appName}-${uniqueString(resourceGroup().id)}'
+  name: 'blob-${appName}-${uniqueString(resourceGroup().id)}'
   location: location
   sku: {
     name: 'Standard_LRS'
