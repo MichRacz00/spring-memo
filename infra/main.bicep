@@ -13,7 +13,7 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
     retentionInDays: 30
     // Daily cap ensures logs do not exceed the free 5GB limit
     workspaceCapping: {
-      dailyQuotaGb: json(0.19)
+      dailyQuotaGb: json('0.19')
     }
   }
 }
