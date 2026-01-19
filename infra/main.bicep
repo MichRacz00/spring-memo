@@ -38,6 +38,7 @@ resource env 'Microsoft.App/managedEnvironments@2023-05-01' = {
 resource app 'Microsoft.App/containerApps@2023-05-01' = {
   name: appName
   location: location
+  identity: { type: 'SystemAssigned' }
   properties: {
     managedEnvironmentId: env.id
     configuration: {
@@ -59,6 +60,28 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
         maxReplicas: 1
       }
     }
+  }
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+  name: 'kv-${appName}-${uniqueString(resourceGroup().id)}' // Must be globally unique
+  location: location
+  properties: {
+    sku: { family: 'A', name: 'standard' }
+    tenantId: subscription().tenantId
+    enableRbacAuthorization: true
+    enabledForTemplateDeployment: true
+  }
+}
+
+// Assign access to the key vault for the app
+resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(keyVault.id, app.id, 'KeyVaultSecretsUser')
+  scope: keyVault
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
+    principalId: app.identity.principalId
+    principalType: 'ServicePrincipal'
   }
 }
 
