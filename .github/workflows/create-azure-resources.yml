@@ -1,0 +1,61 @@
+name: Provision Azure Infrastructure
+description: This workflow is the "Big Bang" setup. It ensures that the target Resource Group (rg-memo-app) and all necessary dependencies exist before the application tries to deploy. It is idempotent, meaning you can run it multiple times; if resources already exist, it updates them (or skips creation) rather than failing or creating duplicates.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'infra/**' # Run when infrastructure files change
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  RESOURCE_GROUP: rg-memo-app
+  APP_NAME: memo
+  
+jobs:
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+    
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Create Resource Group
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            echo "Creating or Updating Resource Group: ${{ env.RESOURCE_GROUP }}"
+            az group create --name ${{ env.RESOURCE_GROUP }} --location polandcentral
+            
+      - name: Get Docker Image Name
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          REPO_LC=${REPOSITORY,,} # Convert repository name to lowercase
+          IMAGE_URL=ghcr.io/${REPO_LC}:latest
+          echo "DOCKER_IMAGE=$IMAGE_URL" >> $GITHUB_ENV
+            
+      - name: Deploy Infrastructure (Bicep)
+        uses: azure/arm-deploy@v2
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          template: ./infra/main.bicep
+          parameters: >
+            appName=${{ env.APP_NAME }}
+            containerImage=${{ env.DOCKER_IMAGE }}
+          failOnStdErr: false
