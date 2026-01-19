@@ -7,6 +7,10 @@ on:
     paths:
       - 'infra/**' # Run when infrastructure files change
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   id-token: write
   contents: read
