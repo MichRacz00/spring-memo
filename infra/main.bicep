@@ -2,7 +2,7 @@ param location string = resourceGroup().location
 param appName string = 'memo'
 param containerImage string // Passed from GitHub Actions. Should be configured from github context.
 
-// 1. Minimal Log Analytics (Required by the Environment)
+// Minimal log analytics, required
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   name: 'logs-${appName}'
   location: location
@@ -13,12 +13,12 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
     retentionInDays: 30
     // Daily cap ensures logs do not exceed the free 5GB limit
     workspaceCapping: {
-      dailyQuotaGb: 1
+      dailyQuotaGb: json(0.19)
     }
   }
 }
 
-// 2. Minimal Environment (The "Cluster" for your app)
+// Minimal environment for the container app
 resource env 'Microsoft.App/managedEnvironments@2023-05-01' = {
   name: 'env-${appName}'
   location: location
@@ -34,7 +34,7 @@ resource env 'Microsoft.App/managedEnvironments@2023-05-01' = {
   }
 }
 
-// 3. Minimal Container App
+// Container app hosting docker image
 resource app 'Microsoft.App/containerApps@2023-05-01' = {
   name: appName
   location: location
