@@ -120,7 +120,7 @@ resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/con
   name: 'memo-cards'
   properties: {
     resource: {
-      id: 'memos-cards'
+      id: 'memo-cards'
       partitionKey: { paths: ['/userId'], kind: 'Hash' }
     }
   }
