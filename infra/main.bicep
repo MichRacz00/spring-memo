@@ -132,4 +132,40 @@ resource cosmosDatabaseKey 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   properties: { value: cosmosAccount.listKeys().primaryMasterKey }
 }
 
-output url string = app.properties.configuration.ingress.fqdn
+resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+  name: 'blobstorage-${appName}-${uniqueString(resourceGroup().id)}'
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    accessTier: 'Hot'
+    minimumTlsVersion: 'TLS1_2'
+    supportsHttpsTrafficOnly: true
+  }
+}
+
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = {
+  parent: storage
+  name: 'default'
+}
+
+resource backgroundsContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = {
+  parent: blobService
+  name: 'backgrounds'
+  properties: {
+    publicAccess: 'None'
+  }
+}
+
+
+resource blobStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(storage.id, app.id, 'StorageBlobDataContributor')
+  scope: storage
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
+    principalId: app.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
