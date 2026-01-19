@@ -83,9 +83,9 @@
 			<version>1.18.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.azure</groupId>
-			<artifactId>azure-data-appconfiguration</artifactId>
-			<version>1.9.0</version>
+			<groupId>com.azure.spring</groupId>
+			<artifactId>spring-cloud-azure-starter-appconfiguration</artifactId>
+			<version>5.18.0</version>
 		</dependency>
 	</dependencies>
 
