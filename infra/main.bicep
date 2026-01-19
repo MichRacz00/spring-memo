@@ -1,26 +1,25 @@
-@description('The location for all resources.')
 param location string = resourceGroup().location
+param appName string = 'memo'
+param containerImage string // Passed from GitHub Actions. Should be configured from github context.
 
-@description('The name of the Container App.')
-param appName string = 'memo-app'
-
-@description('The Docker image to deploy. Fetched from github context in github actions.')
-param containerImage string
-
-// --- 1. Log Analytics Workspace (Required for Container Apps) ---
+// 1. Minimal Log Analytics (Required by the Environment)
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
-  name: 'log-${appName}'
+  name: 'logs-${appName}'
   location: location
   properties: {
     sku: {
       name: 'PerGB2018'
     }
     retentionInDays: 30
+    // Daily cap ensures logs do not exceed the free 5GB limit
+    workspaceCapping: {
+      dailyQuotaGb: 0.19
+    }
   }
 }
 
-// --- 2. Container Apps Environment ---
-resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
+// 2. Minimal Environment (The "Cluster" for your app)
+resource env 'Microsoft.App/managedEnvironments@2023-05-01' = {
   name: 'env-${appName}'
   location: location
   properties: {
@@ -31,67 +30,36 @@ resource containerAppEnv 'Microsoft.App/managedEnvironments@2023-05-01' = {
         sharedKey: logAnalytics.listKeys().primarySharedKey
       }
     }
-    // "Consumption" workload profile is the standard serverless option
-    workloadProfiles: [
-      {
-        name: 'Consumption'
-        workloadProfileType: 'Consumption'
-      }
-    ]
+    workloadProfiles: [{ name: 'Consumption', workloadProfileType: 'Consumption' }]
   }
 }
 
-// --- 3. Container App ---
-resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
+// 3. Minimal Container App
+resource app 'Microsoft.App/containerApps@2023-05-01' = {
   name: appName
   location: location
   properties: {
-    managedEnvironmentId: containerAppEnv.id
+    managedEnvironmentId: env.id
     configuration: {
-      activeRevisionsMode: 'Single'
       ingress: {
-        external: true // Publicly accessible
-        targetPort: targetPort
-        allowInsecure: false
-        traffic: [
-          {
-            latestRevision: true
-            weight: 100
-          }
-        ]
+        external: true
+        targetPort: 8080
       }
-      // If using a private registry (GHCR), uncomment and fill these:
-      /*
-      registries: [
-        {
-          server: 'ghcr.io'
-          username: 'GITHUB_USERNAME'
-          passwordSecretRef: 'ghcr-password'
-        }
-      ]
-      secrets: [
-        {
-          name: 'ghcr-password'
-          value: 'YOUR_PAT_TOKEN'
-        }
-      ]
-      */
     }
     template: {
       containers: [
         {
           name: appName
           image: containerImage
-          resources: {
-            cpu: json(cpuCore)
-            memory: memorySize
-          }
-          // Add your Environment Variables here
-          env: [
-            {
-              name: 'SPRING_PROFILES_ACTIVE'
-              value: 'prod'
-            }
-          ]
+          resources: { cpu: 0.25, memory: '0.5Gi' }
         }
       ]
+      scale: {
+        minReplicas: 0 // Scale to zero to save money
+        maxReplicas: 1
+      }
+    }
+  }
+}
+
+output url string = app.properties.configuration.ingress.fqdn
