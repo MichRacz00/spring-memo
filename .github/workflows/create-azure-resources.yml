@@ -50,7 +50,7 @@ jobs:
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          template: ./main.bicep  # Ensure this matches your file path
+          template: ./infra/main.bicep
           parameters: >
             appName=${{ env.APP_NAME }}
             containerImage=${{ env.DOCKER_IMAGE }}
