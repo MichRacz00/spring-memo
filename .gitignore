@@ -3,7 +3,8 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-application.properties
+
+application.yml
 src/main/resources/bootstrap.properties
 
 ### STS ###
@@ -33,6 +34,3 @@ build/
 
 ### VS Code ###
 .vscode/
-
-### JSON files for storage
-src/main/resources/*.json
