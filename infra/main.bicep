@@ -56,7 +56,7 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
         }
       ]
       scale: {
-        minReplicas: 0 // Scale to zero to save money
+        minReplicas: 0
         maxReplicas: 1
       }
     }
@@ -158,7 +158,6 @@ resource backgroundsContainer 'Microsoft.Storage/storageAccounts/blobServices/co
     publicAccess: 'None'
   }
 }
-
 
 resource blobStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(storage.id, app.id, 'StorageBlobDataContributor')
