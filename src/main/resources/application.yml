@@ -3,8 +3,11 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+
   cloud:
     azure:
+      appconfiguration:
+        endpoint: https://memo-config.azconfig.io
       active-directory:
         enabled: true
         credential.client-id: 58efa4d5-62e8-4b3c-82ac-b0720c84f829
@@ -18,7 +21,6 @@ spring:
         blob:
           endpoint: https://memoblob.blob.core.windows.net/
         account-name: memoblob
-
-
-database.endpoint: https://memo-storage.documents.azure.com:443/
-keyvault.endpoint: https://memo-keyvault.vault.azure.net/
+    appconfiguration:
+      stores:
+        - endpoint: https://memo-config.azconfig.io
