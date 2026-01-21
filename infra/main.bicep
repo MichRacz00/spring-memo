@@ -191,7 +191,7 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
   }
 }
 
-resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+resource kvMaxFileSize 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
   name: 'spring.servlet.multipart.max-file-size'
   properties: {
@@ -200,7 +200,7 @@ resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVal
   }
 }
 
-resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+resource kvMaxRequestSize 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
   name: 'spring.servlet.multipart.max-request-size'
   properties: {
@@ -209,7 +209,7 @@ resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVal
   }
 }
 
-resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+resource kvTenantId 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
   name: 'spring.cloud.azure.active-directory.profile.tenant-id'
   properties: {
@@ -218,7 +218,7 @@ resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVal
   }
 }
 
-resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+resource kvADEnabled 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
   name: 'spring.cloud.azure.active-directory.enabled'
   properties: {
@@ -227,7 +227,7 @@ resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVal
   }
 }
 
-resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+resource kvGraphScopes 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
   name: 'spring.cloud.azure.active-directory.authorization-clients.graph.scopes[0]'
   properties: {
@@ -272,7 +272,7 @@ resource kvStorageAccount 'Microsoft.AppConfiguration/configurationStores/keyVal
   }
 }
 
-resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+resource kvRedirectUri 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
   name: 'spring.cloud.azure.active-directory.post-logout-redirect-uri'
   properties: {
