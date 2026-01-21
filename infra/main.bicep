@@ -247,7 +247,7 @@ resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVa
   parent: appConfig
   name: 'spring.cloud.azure.storage.blob.endpoint$production'
   properties: {
-    value: storageAccount.properties.primaryEndpoints.blob
+    value: storage.properties.primaryEndpoints.blob
     contentType: 'text/plain'
   }
 }
@@ -256,7 +256,7 @@ resource kvStorageAccount 'Microsoft.AppConfiguration/configurationStores/keyVal
   parent: appConfig
   name: 'spring.cloud.azure.storage.blob.account-name$production'
   properties: {
-    value: storageAccount.name
+    value: storage.name
     contentType: 'text/plain'
   }
 }
