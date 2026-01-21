@@ -276,7 +276,7 @@ resource kvRedirectUri 'Microsoft.AppConfiguration/configurationStores/keyValues
   parent: appConfig
   name: 'spring.cloud.azure.active-directory.post-logout-redirect-uri'
   properties: {
-    value: 'https://${app.properties.configuration.ingress.fqdn}$${production}'
+    value: 'https://${app.properties.configuration.ingress.fqdn}$${environment}'
     contentType: 'text/plain'
   }
 }
