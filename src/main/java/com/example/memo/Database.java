@@ -12,14 +12,11 @@ import javax.annotation.PostConstruct;
 @Component
 public class Database {
 
-    //@Value("${keyvault.endpoint}")
-    private String keyvaultEndpoint = "https://memo-keyvault.vault.azure.net/";
+    @Value("${keyvault.endpoint}")
+    private String keyvaultEndpoint;
 
     @Value("${database.endpoint}")
     private String databaseEndpoint;
-
-    @Value("${databasetest}")
-    private String databasetest;
 
     private CosmosClient cosmosClient;
 
