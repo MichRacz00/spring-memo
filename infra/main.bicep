@@ -224,7 +224,7 @@ var configValues = [
 
 resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.cosmos.endpoint$blob${environment}'
+  name: 'spring.cloud.azure.cosmos.endpoint${environment}'
   properties: {
     value: cosmosAccount.properties.documentEndpoint
     contentType: 'text/plain'
