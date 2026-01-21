@@ -191,36 +191,50 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
   }
 }
 
-var configValues = [
-  {
-    key: 'spring.servlet.multipart.max-file-size'
+resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.servlet.multipart.max-file-size'
+  properties: {
     value: '10MB'
+    contentType: 'text/plain'
   }
-  {
-    key: 'spring.servlet.multipart.max-request-size'
+}
+
+resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.servlet.multipart.max-request-size'
+  properties: {
     value: '10MB'
+    contentType: 'text/plain'
   }
-  {
-    key: 'spring.cloud.azure.active-directory.enabled'
-    value: 'true'
-  }
-  {
-    key: 'SPRING_CLOUD_AZURE_ACTIVE_DIRECTORY_PROFILE_TENANT_ID'
+}
+
+resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.active-directory.profile.tenant-id'
+  properties: {
     value: 'common'
+    contentType: 'text/plain'
   }
-  {
-    key: 'SPRING_CLOUD_AZURE_ACTIVE_DIRECTORY_POST_LOGOUT_REDIRECT_URI'
-    value: 'http://localhost:8080'
+}
+
+resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.active-directory.enabled'
+  properties: {
+    value: 'true'
+    contentType: 'text/plain'
   }
-  {
-    key: 'SPRING_CLOUD_AZURE_ACTIVE_DIRECTORY_AUTHORIZATION_CLIENTS_GRAPH_SCOPES_0'
+}
+
+resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.active-directory.authorization-clients.graph.scopes[0]'
+  properties: {
     value: 'https://graph.microsoft.com/User.Read'
+    contentType: 'text/plain'
   }
-  {
-    key: 'SPRING_CLOUD_AZURE_STORAGE_BLOB_ENDPOINT'
-    value: 'https://memoblob.blob.core.windows.net/'
-  }
-]
+}
 
 resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
@@ -254,6 +268,15 @@ resource kvStorageAccount 'Microsoft.AppConfiguration/configurationStores/keyVal
   name: 'spring.cloud.azure.storage.blob.account-name$${environment}'
   properties: {
     value: storage.name
+    contentType: 'text/plain'
+  }
+}
+
+resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.active-directory.post-logout-redirect-uri'
+  properties: {
+    value: 'https://${app.properties.configuration.ingress.fqdn}$${production}'
     contentType: 'text/plain'
   }
 }
