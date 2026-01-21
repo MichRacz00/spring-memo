@@ -223,15 +223,6 @@ resource kvGraphScopes 'Microsoft.AppConfiguration/configurationStores/keyValues
   }
 }
 
-resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
-  parent: appConfig
-  name: 'spring.cloud.azure.cosmos.endpoint$${environment}'
-  properties: {
-    value: cosmosAccount.properties.documentEndpoint
-    contentType: 'text/plain'
-  }
-}
-
 resource kvCosmosDbName 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
   name: 'spring.cloud.azure.cosmos.database$${environment}'
@@ -245,7 +236,16 @@ resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVa
   parent: appConfig
   name: 'database.endpoint$${environment}'
   properties: {
-    value: cosmosDb.properties.documentEndpoint
+    value: cosmosAccount.properties.documentEndpoint
+    contentType: 'text/plain'
+  }
+}
+
+resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.cosmos.endpoint$${environment}'
+  properties: {
+    value: cosmosAccount.properties.documentEndpoint
     contentType: 'text/plain'
   }
 }
