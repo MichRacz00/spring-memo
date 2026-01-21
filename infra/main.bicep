@@ -224,7 +224,7 @@ var configValues = [
 
 resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.cosmos.endpoint${environment}'
+  name: 'spring.cloud.azure.cosmos.endpoint$${environment}'
   properties: {
     value: cosmosAccount.properties.documentEndpoint
     contentType: 'text/plain'
@@ -233,7 +233,7 @@ resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVal
 
 resource kvCosmosDbName 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.cosmos.database${environment}'
+  name: 'spring.cloud.azure.cosmos.database$${environment}'
   properties: {
     value: 'MemoDB'
     contentType: 'text/plain'
@@ -242,7 +242,7 @@ resource kvCosmosDbName 'Microsoft.AppConfiguration/configurationStores/keyValue
 
 resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.storage.blob.endpoint${environment}'
+  name: 'spring.cloud.azure.storage.blob.endpoint$${environment}'
   properties: {
     value: storage.properties.primaryEndpoints.blob
     contentType: 'text/plain'
@@ -251,7 +251,7 @@ resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVa
 
 resource kvStorageAccount 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.storage.blob.account-name${environment}'
+  name: 'spring.cloud.azure.storage.blob.account-name$${environment}'
   properties: {
     value: storage.name
     contentType: 'text/plain'
