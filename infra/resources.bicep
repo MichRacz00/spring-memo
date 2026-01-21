@@ -178,16 +178,6 @@ resource backgroundsContainer 'Microsoft.Storage/storageAccounts/blobServices/co
   }
 }
 
-resource blobStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(storage.id, app.id, 'StorageBlobDataContributor')
-  scope: storage
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
-    principalId: app.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
 resource kvMaxFileSize 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
   name: 'spring.servlet.multipart.max-file-size'
