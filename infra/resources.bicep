@@ -78,6 +78,10 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
                 name: 'AZURE_APP_CONFIG_ENDPOINT'
                 value: appConfig.properties.endpoint
             }
+            {
+                name: 'SPRING_CLOUD_AZURE_PROFILE_TENANT_ID'
+                value: subscription().tenantId
+            }
           ]
         }
       ]
@@ -303,5 +307,4 @@ module appPermissions './modules/permissions.bicep' = {
     appConfigName: appConfig.name
     storageAccountName: storage.name
   }
-  dependsOn: [app]
 }
