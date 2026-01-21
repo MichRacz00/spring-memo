@@ -5,6 +5,10 @@ spring:
       max-request-size: 10MB
   cloud:
     azure:
+      appconfiguration:
+        stores:
+          - endpoint: https://memo-config.azconfig.io
+        enabled: true
       active-directory:
         enabled: true
         credential.client-id: 58efa4d5-62e8-4b3c-82ac-b0720c84f829
@@ -19,6 +23,10 @@ spring:
           endpoint: https://memoblob.blob.core.windows.net/
         account-name: memoblob
 
-
-database.endpoint: https://memo-storage.documents.azure.com:443/
 keyvault.endpoint: https://memo-keyvault.vault.azure.net/
+
+logging:
+  level:
+    com.azure.spring: DEBUG
+    com.azure.data.appconfiguration: DEBUG
+    root: INFO

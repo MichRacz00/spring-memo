@@ -18,6 +18,9 @@ public class Database {
     @Value("${database.endpoint}")
     private String databaseEndpoint;
 
+    @Value("${databasetest}")
+    private String databasetest;
+
     private CosmosClient cosmosClient;
 
     @PostConstruct
