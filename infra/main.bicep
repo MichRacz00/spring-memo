@@ -201,7 +201,7 @@ var configValues = [
   }
   {
     key: 'database.endpoint'
-    value: cosmosDb.properties.documentEndpoint
+    value: cosmosAccount.properties.documentEndpoint
   }
   {
     key: 'keyvault.endpoint'
