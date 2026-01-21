@@ -33,14 +33,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Create Resource Group
-        uses: azure/cli@v2
-        with:
-          azcliversion: latest
-          inlineScript: |
-            echo "Creating or Updating Resource Group: ${{ env.RESOURCE_GROUP }}"
-            az group create --name ${{ env.RESOURCE_GROUP }} --location polandcentral
             
       - name: Get Docker Image Name
         env:
@@ -53,8 +45,8 @@ jobs:
       - name: Deploy Infrastructure (Bicep)
         uses: azure/arm-deploy@v2
         with:
+          scope: subscription
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          resourceGroupName: ${{ env.RESOURCE_GROUP }}
           template: ./infra/main.bicep
           parameters: >
             appName=${{ env.APP_NAME }}
