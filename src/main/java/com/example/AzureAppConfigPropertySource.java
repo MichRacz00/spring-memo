@@ -40,8 +40,26 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
             // 1. Share the credential between App Config and Key Vault
             TokenCredential credential = new DefaultAzureCredentialBuilder().build();
 
+            String appConfigEndpoint = System.getenv("AZURE_APP_CONFIG_ENDPOINT");
+            if (appConfigEndpoint == null || appConfigEndpoint.isBlank()) {
+                // FALLBACK: Try reading from .env file in project root
+                try {
+                    java.nio.file.Path envPath = java.nio.file.Paths.get(".env");
+                    if (java.nio.file.Files.exists(envPath)) {
+                        System.out.println("Reading configuration from local .env file...");
+                        appConfigEndpoint = java.nio.file.Files.lines(envPath)
+                                .filter(line -> line.trim().startsWith("AZURE_APP_CONFIG_ENDPOINT="))
+                                .map(line -> line.split("=", 2)[1].trim())
+                                .findFirst()
+                                .orElse(null);
+                    }
+                } catch (Exception ignored) {
+                    // Ignore parsing errors, we will throw exception below if still null
+                }
+            }
+
             ConfigurationClientBuilder builder = new ConfigurationClientBuilder()
-                    .endpoint("https://memo-config.azconfig.io")
+                    .endpoint(appConfigEndpoint)
                     .credential(credential);
 
             ConfigurationClient client = builder.buildClient();

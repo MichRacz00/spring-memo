@@ -19,6 +19,21 @@ resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
   }
 }
 
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
+  name: 'config-${appName}'
+  location: location
+  sku: {
+    name: 'free'
+  }
+  properties: {
+    enablePurgeProtection: false
+    softDeleteRetentionInDays: 0
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
 // Minimal environment for the container app
 resource env 'Microsoft.App/managedEnvironments@2023-05-01' = {
   name: 'env-${appName}'
@@ -57,7 +72,11 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
           env: [
             {
                 name: 'ENVIRONMENT'
-                value: '${environment}'
+                value: ${environment}
+            }
+            {
+                name: 'AZURE_APP_CONFIG_ENDPOINT'
+                value: appConfig.properties.endpoint
             }
           ]
         }
@@ -173,21 +192,6 @@ resource blobStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
     principalId: app.identity.principalId
     principalType: 'ServicePrincipal'
-  }
-}
-
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
-  name: 'config-${appName}'
-  location: location
-  sku: {
-    name: 'free'
-  }
-  properties: {
-    enablePurgeProtection: false
-    softDeleteRetentionInDays: 0
-  }
-  identity: {
-    type: 'SystemAssigned'
   }
 }
 
