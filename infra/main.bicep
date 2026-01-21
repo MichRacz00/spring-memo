@@ -79,6 +79,15 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
                 value: appConfig.properties.endpoint
             }
           ]
+          probes: [
+            {
+              type: 'Startup'
+                tcpSocket: { port: 8080 }
+                initialDelaySeconds: 10
+                periodSeconds: 5
+                failureThreshold: 30
+            }
+          ]
         }
       ]
       scale: {
