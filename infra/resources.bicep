@@ -245,7 +245,7 @@ resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVa
   parent: appConfig
   name: 'database.endpoint$${environment}'
   properties: {
-    value: storage.properties.documentEndpoint
+    value: cosmosDb.properties.documentEndpoint
     contentType: 'text/plain'
   }
 }
