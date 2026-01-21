@@ -104,17 +104,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   }
 }
 
-// Assign access to the key vault for the app
-resource kvRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, app.id, 'KeyVaultSecretsUser')
-  scope: keyVault
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '4633458b-17de-408a-b874-0445c86b69e6')
-    principalId: app.identity.principalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
 resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
   name: 'cosmos-${appName}-${uniqueString(resourceGroup().id)}'
   location: location
@@ -257,7 +246,7 @@ resource kvCosmosDbName 'Microsoft.AppConfiguration/configurationStores/keyValue
   parent: appConfig
   name: 'spring.cloud.azure.cosmos.database$${environment}'
   properties: {
-    value: 'MemoDB'
+    value: cosmosDb.name
     contentType: 'text/plain'
   }
 }
