@@ -79,15 +79,6 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
                 value: appConfig.properties.endpoint
             }
           ]
-          probes: [
-            {
-              type: 'Startup'
-                tcpSocket: { port: 8080 }
-                initialDelaySeconds: 10
-                periodSeconds: 5
-                failureThreshold: 30
-            }
-          ]
         }
       ]
       scale: {
@@ -300,5 +291,16 @@ resource kvRedirectUri 'Microsoft.AppConfiguration/configurationStores/keyValues
   properties: {
     value: 'https://${app.properties.configuration.ingress.fqdn}'
     contentType: 'text/plain'
+  }
+}
+
+// Assign RBAC to resources
+module appPermissions './modules/permissions.bicep' = {
+  name: 'assign-managed-identity-roles'
+  params: {
+    principalId: app.identity.principalId  // System identity ID
+    keyVaultName: keyVault.name
+    appConfigName: appConfig.name
+    storageAccountName: storage.name
   }
 }
