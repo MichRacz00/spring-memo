@@ -1,6 +1,7 @@
 param location string = resourceGroup().location
 param appName string = 'memo'
 param containerImage string // Passed from GitHub Actions. Should be configured from github context.
+param environment = 'production'
 
 // Minimal log analytics, required
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
@@ -183,7 +184,7 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
   }
   properties: {
     enablePurgeProtection: false
-    softDeleteRetentionInDays: 1
+    softDeleteRetentionInDays: 0
   }
   identity: {
     type: 'SystemAssigned'
@@ -219,15 +220,11 @@ var configValues = [
     key: 'SPRING_CLOUD_AZURE_STORAGE_BLOB_ENDPOINT'
     value: 'https://memoblob.blob.core.windows.net/'
   }
-  {
-    key: 'SPRING_CLOUD_AZURE_STORAGE_ACCOUNT_NAME'
-    value: 'memoblob'
-  }
 ]
 
 resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.cosmos.endpoint$production'
+  name: 'spring.cloud.azure.cosmos.endpoint$blob$${environment}'
   properties: {
     value: cosmosAccount.properties.documentEndpoint
     contentType: 'text/plain'
@@ -236,7 +233,7 @@ resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVal
 
 resource kvCosmosDbName 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.cosmos.database$production'
+  name: 'spring.cloud.azure.cosmos.database$${environment}'
   properties: {
     value: 'MemoDB'
     contentType: 'text/plain'
@@ -245,7 +242,7 @@ resource kvCosmosDbName 'Microsoft.AppConfiguration/configurationStores/keyValue
 
 resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.storage.blob.endpoint$production'
+  name: 'spring.cloud.azure.storage.blob.endpoint$${environment}'
   properties: {
     value: storage.properties.primaryEndpoints.blob
     contentType: 'text/plain'
@@ -254,7 +251,7 @@ resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVa
 
 resource kvStorageAccount 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.storage.blob.account-name$production'
+  name: 'spring.cloud.azure.storage.blob.account-name$${environment}'
   properties: {
     value: storage.name
     contentType: 'text/plain'
