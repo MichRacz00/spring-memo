@@ -57,11 +57,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-		<dependency>
-			<groupId>com.azure</groupId>
-			<artifactId>azure-cosmos</artifactId>
-			<version>4.76.0</version>
-		</dependency>
+
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
@@ -77,6 +73,11 @@
 			<artifactId>msal4j</artifactId>
 			<version>1.23.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.azure</groupId>
+			<artifactId>azure-cosmos</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-client</artifactId>
@@ -84,17 +85,14 @@
 		<dependency>
 			<groupId>com.azure.spring</groupId>
 			<artifactId>spring-cloud-azure-starter-storage-blob</artifactId>
-			<version>5.24.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.azure</groupId>
 			<artifactId>azure-security-keyvault-secrets</artifactId>
-			<version>4.2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.azure</groupId>
 			<artifactId>azure-identity</artifactId>
-			<version>1.18.0</version>
 		</dependency>
 	</dependencies>
 
