@@ -1,7 +1,7 @@
 param location string = resourceGroup().location
 param appName string = 'memo'
 param containerImage string // Passed from GitHub Actions. Should be configured from github context.
-param environment = 'production'
+param environment string = 'production'
 
 // Minimal log analytics, required
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
