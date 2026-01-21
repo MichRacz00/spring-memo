@@ -241,7 +241,6 @@ resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyVa
   }
 }
 
-
 resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
   name: 'spring.cloud.azure.cosmos.endpoint$${environment}'
