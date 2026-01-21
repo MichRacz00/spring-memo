@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
 
     private static final String APP_CONFIG_ENV_VAR = "AZURE_APP_CONFIG_ENDPOINT";
+    private static final String ENVIRONMENT_VAR = "ENVIRONMENT";
     private static final String KEY_VAULT_CONTENT_TYPE = "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8";
 
     private final ObjectMapper jsonMapper = new ObjectMapper();
@@ -41,8 +42,13 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
         try {
             System.out.println("--- Starting Azure App Config Load ---");
 
-            // 1. Resolve Endpoint (Cloud Env Var -> Local .env)
-            String endpoint = resolveEndpoint();
+            // 1. Resolve Variables (Cloud Env -> Local .env)
+            String endpoint = resolveEnvVar(APP_CONFIG_ENV_VAR);
+            String envName = resolveEnvVar(ENVIRONMENT_VAR);
+
+            System.out.println("Resolved Endpoint: " + endpoint);
+            System.out.println("Resolved Environment: " + envName);
+
             if (endpoint == null || endpoint.isBlank()) {
                 throw new IllegalStateException("Missing required configuration: " + APP_CONFIG_ENV_VAR);
             }
@@ -54,19 +60,18 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
                     .credential(credential)
                     .buildClient();
 
-            // 3. Determine Profile
-            boolean isProduction = environment.acceptsProfiles(Profiles.of("production"));
+            // 3. Determine Production Status
+            boolean isProduction = "production".equalsIgnoreCase(envName);
+            System.out.println("isProduction set to: " + isProduction);
 
-            // 4. Fetch and Process Settings
+            // 4. Fetch Configuration
             Properties properties = fetchConfiguration(client, credential, isProduction);
 
-            // 5. Inject into Environment
             if (!properties.isEmpty()) {
                 PropertiesPropertySource propertySource = new PropertiesPropertySource("azureAppConfig", properties);
                 environment.getPropertySources().addFirst(propertySource);
                 System.out.println("--- Azure Config Loaded Successfully ---");
             }
-
         } catch (Exception e) {
             System.err.println("FATAL: Failed to load Azure App Configuration: " + e.getMessage());
             // Fail hard to prevent app starting with partial config
@@ -74,21 +79,20 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
         }
     }
 
-    private String resolveEndpoint() {
+    private String resolveEnvVar(String variableName) {
         // Priority 1: System Environment (Cloud/Docker)
-        String endpoint = System.getenv(APP_CONFIG_ENV_VAR);
-        if (endpoint != null && !endpoint.isBlank()) {
-            return endpoint;
+        String value = System.getenv(variableName);
+        if (value != null && !value.isBlank()) {
+            return value;
         }
 
         // Priority 2: Local .env file
         try {
             Path envPath = Paths.get(".env");
             if (Files.exists(envPath)) {
-                System.out.println("Reading configuration from local .env file...");
                 try (Stream<String> lines = Files.lines(envPath)) {
                     return lines
-                            .filter(line -> line.trim().startsWith(APP_CONFIG_ENV_VAR + "="))
+                            .filter(line -> line.trim().startsWith(variableName + "="))
                             .map(line -> line.split("=", 2)[1].trim())
                             .findFirst()
                             .orElse(null);

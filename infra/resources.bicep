@@ -78,7 +78,7 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
                 name: 'AZURE_APP_CONFIG_ENDPOINT'
                 value: appConfig.properties.endpoint
             }
-            {
+            {   // Forces the Azure SDK to use the specific Tenant ID
                 name: 'SPRING_CLOUD_AZURE_PROFILE_TENANT_ID'
                 value: subscription().tenantId
             }
