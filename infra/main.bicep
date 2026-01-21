@@ -303,4 +303,10 @@ module appPermissions './modules/permissions.bicep' = {
     appConfigName: appConfig.name
     storageAccountName: storage.name
   }
+  dependsOn: [
+    app
+    keyVault
+    appConfig
+    storage
+  ]
 }
