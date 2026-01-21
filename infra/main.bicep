@@ -176,7 +176,7 @@ resource blobStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
 }
 
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
-  name: appConfigName
+  name: 'config-${appName}'
   location: location
   sku: {
     name: 'free'
@@ -200,21 +200,8 @@ var configValues = [
     value: '10MB'
   }
   {
-    key: 'database.endpoint'
-    value: cosmosAccount.properties.documentEndpoint
-  }
-  {
-    key: 'keyvault.endpoint'
-    value: keyVault.properties.vaultUri
-  }
-
-  {
     key: 'spring.cloud.azure.active-directory.enabled'
     value: 'true'
-  }
-  {
-    key: 'SPRING_CLOUD_AZURE_ACTIVE_DIRECTORY_CREDENTIAL_CLIENT_ID'
-    value: clientId
   }
   {
     key: 'SPRING_CLOUD_AZURE_ACTIVE_DIRECTORY_PROFILE_TENANT_ID'
@@ -238,11 +225,38 @@ var configValues = [
   }
 ]
 
-resource configKeyValues 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [for config in configValues: {
+resource kvCosmosEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: '${config.key}$production'
+  name: 'spring.cloud.azure.cosmos.endpoint$production'
   properties: {
-    value: config.value
+    value: cosmosAccount.properties.documentEndpoint
     contentType: 'text/plain'
   }
-}]
+}
+
+resource kvCosmosDbName 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.cosmos.database$production'
+  properties: {
+    value: 'MemoDB'
+    contentType: 'text/plain'
+  }
+}
+
+resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.storage.blob.endpoint$production'
+  properties: {
+    value: storageAccount.properties.primaryEndpoints.blob
+    contentType: 'text/plain'
+  }
+}
+
+resource kvStorageAccount 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.storage.blob.account-name$production'
+  properties: {
+    value: storageAccount.name
+    contentType: 'text/plain'
+  }
+}
