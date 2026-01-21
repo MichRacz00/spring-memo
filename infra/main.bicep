@@ -54,6 +54,12 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
           image: containerImage
           resources: { cpu: json('0.25'), memory: '0.5Gi' }
         }
+        env: [
+            {
+                name: 'ENVIRONMENT'
+                value: 'production'
+            }
+        ]
       ]
       scale: {
         minReplicas: 0
@@ -168,3 +174,75 @@ resource blobStorageRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
     principalType: 'ServicePrincipal'
   }
 }
+
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
+  name: appConfigName
+  location: location
+  sku: {
+    name: 'free'
+  }
+  properties: {
+    enablePurgeProtection: false
+    softDeleteRetentionInDays: 1
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
+var configValues = [
+  {
+    key: 'spring.servlet.multipart.max-file-size'
+    value: '10MB'
+  }
+  {
+    key: 'spring.servlet.multipart.max-request-size'
+    value: '10MB'
+  }
+  {
+    key: 'database.endpoint'
+    value: cosmosDb.properties.documentEndpoint
+  }
+  {
+    key: 'keyvault.endpoint'
+    value: keyVault.properties.vaultUri
+  }
+
+  {
+    key: 'spring.cloud.azure.active-directory.enabled'
+    value: 'true'
+  }
+  {
+    key: 'SPRING_CLOUD_AZURE_ACTIVE_DIRECTORY_CREDENTIAL_CLIENT_ID'
+    value: clientId
+  }
+  {
+    key: 'SPRING_CLOUD_AZURE_ACTIVE_DIRECTORY_PROFILE_TENANT_ID'
+    value: 'common'
+  }
+  {
+    key: 'SPRING_CLOUD_AZURE_ACTIVE_DIRECTORY_POST_LOGOUT_REDIRECT_URI'
+    value: 'http://localhost:8080'
+  }
+  {
+    key: 'SPRING_CLOUD_AZURE_ACTIVE_DIRECTORY_AUTHORIZATION_CLIENTS_GRAPH_SCOPES_0'
+    value: 'https://graph.microsoft.com/User.Read'
+  }
+  {
+    key: 'SPRING_CLOUD_AZURE_STORAGE_BLOB_ENDPOINT'
+    value: 'https://memoblob.blob.core.windows.net/'
+  }
+  {
+    key: 'SPRING_CLOUD_AZURE_STORAGE_ACCOUNT_NAME'
+    value: 'memoblob'
+  }
+]
+
+resource configKeyValues 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = [for config in configValues: {
+  parent: appConfig
+  name: '${config.key}$production'
+  properties: {
+    value: config.value
+    contentType: 'text/plain'
+  }
+}]
