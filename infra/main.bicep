@@ -72,7 +72,7 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
           env: [
             {
                 name: 'ENVIRONMENT'
-                value: ${environment}
+                value: '${environment}'
             }
             {
                 name: 'AZURE_APP_CONFIG_ENDPOINT'

@@ -19,95 +19,49 @@ import org.springframework.core.env.Profiles;
 import org.springframework.core.env.PropertiesPropertySource;
 
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
 
-    // Mapper to parse the Key Vault JSON reference
-    private final ObjectMapper jsonMapper = new ObjectMapper();
+    private static final String APP_CONFIG_ENV_VAR = "AZURE_APP_CONFIG_ENDPOINT";
+    private static final String KEY_VAULT_CONTENT_TYPE = "application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8";
 
-    // Cache Key Vault clients to avoid recreating them for every secret
-    private final Map<String, SecretClient> secretClientCache = new HashMap<>();
+    private final ObjectMapper jsonMapper = new ObjectMapper();
+    private final Map<String, SecretClient> secretClientCache = new ConcurrentHashMap<>();
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         try {
-            System.out.println("--- Starting Azure App Config Load (With Key Vault Support) ---");
+            System.out.println("--- Starting Azure App Config Load ---");
 
-            // 1. Share the credential between App Config and Key Vault
-            TokenCredential credential = new DefaultAzureCredentialBuilder().build();
-
-            String appConfigEndpoint = System.getenv("AZURE_APP_CONFIG_ENDPOINT");
-            if (appConfigEndpoint == null || appConfigEndpoint.isBlank()) {
-                // FALLBACK: Try reading from .env file in project root
-                try {
-                    java.nio.file.Path envPath = java.nio.file.Paths.get(".env");
-                    if (java.nio.file.Files.exists(envPath)) {
-                        System.out.println("Reading configuration from local .env file...");
-                        appConfigEndpoint = java.nio.file.Files.lines(envPath)
-                                .filter(line -> line.trim().startsWith("AZURE_APP_CONFIG_ENDPOINT="))
-                                .map(line -> line.split("=", 2)[1].trim())
-                                .findFirst()
-                                .orElse(null);
-                    }
-                } catch (Exception ignored) {
-                    // Ignore parsing errors, we will throw exception below if still null
-                }
+            // 1. Resolve Endpoint (Cloud Env Var -> Local .env)
+            String endpoint = resolveEndpoint();
+            if (endpoint == null || endpoint.isBlank()) {
+                throw new IllegalStateException("Missing required configuration: " + APP_CONFIG_ENV_VAR);
             }
 
-            ConfigurationClientBuilder builder = new ConfigurationClientBuilder()
-                    .endpoint(appConfigEndpoint)
-                    .credential(credential);
+            // 2. Setup Clients
+            TokenCredential credential = new DefaultAzureCredentialBuilder().build();
+            ConfigurationClient client = new ConfigurationClientBuilder()
+                    .endpoint(endpoint)
+                    .credential(credential)
+                    .buildClient();
 
-            ConfigurationClient client = builder.buildClient();
-
+            // 3. Determine Profile
             boolean isProduction = environment.acceptsProfiles(Profiles.of("production"));
 
-            Properties properties = new Properties();
-            SettingSelector selector = new SettingSelector();
+            // 4. Fetch and Process Settings
+            Properties properties = fetchConfiguration(client, credential, isProduction);
 
-            if (isProduction) {
-                selector.setLabelFilter("\0,production");
-            } else {
-                selector.setLabelFilter("\0");
-            }
-
-            for (ConfigurationSetting setting : client.listConfigurationSettings(selector)) {
-                if (setting.getKey() != null && setting.getValue() != null) {
-
-                    String key = setting.getKey();
-                    String value = setting.getValue();
-                    String contentType = setting.getContentType();
-                    String currentLabel = setting.getLabel();
-
-                    // CRITICAL FIX 2: Resolve Key Vault References
-                    if ("application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8".equals(contentType)) {
-                        try {
-                            value = resolveKeyVaultSecret(value, credential);
-                            System.out.println("Resolved Key Vault Secret for: " + key);
-                        } catch (Exception e) {
-                            System.err.println("ERROR: Could not resolve secret for " + key + ". Using raw value.");
-                            e.printStackTrace();
-                        }
-                    }
-
-                    // LOGIC: Priority handling
-                    if (!properties.containsKey(key)) {
-                        properties.setProperty(key, value);
-                        // Don't print value if it's a secret!
-                        System.out.println("Loaded: " + key);
-                    } else {
-                        if (isProduction && "production".equals(currentLabel)) {
-                            properties.setProperty(key, value);
-                            System.out.println("Overwriting with Production value: " + key);
-                        }
-                    }
-                }
-            }
-
+            // 5. Inject into Environment
             if (!properties.isEmpty()) {
                 PropertiesPropertySource propertySource = new PropertiesPropertySource("azureAppConfig", properties);
                 environment.getPropertySources().addFirst(propertySource);
@@ -116,23 +70,84 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
 
         } catch (Exception e) {
             System.err.println("FATAL: Failed to load Azure App Configuration: " + e.getMessage());
+            // Fail hard to prevent app starting with partial config
             throw new RuntimeException("Failed to load mandatory Azure App Configuration", e);
         }
     }
 
-    /**
-     * Parses the JSON Key Vault reference and fetches the actual secret.
-     */
-    private String resolveKeyVaultSecret(String jsonValue, TokenCredential credential) throws Exception {
-        // 1. Parse JSON: {"uri":"https://myvault.vault.azure.net/secrets/mySecret/..."}
-        JsonNode root = jsonMapper.readTree(jsonValue);
-        String secretUriString = root.get("uri").asText();
-        URI secretUri = new URI(secretUriString);
+    private String resolveEndpoint() {
+        // Priority 1: System Environment (Cloud/Docker)
+        String endpoint = System.getenv(APP_CONFIG_ENV_VAR);
+        if (endpoint != null && !endpoint.isBlank()) {
+            return endpoint;
+        }
 
-        // 2. Extract Vault URL (https://myvault.vault.azure.net)
+        // Priority 2: Local .env file
+        try {
+            Path envPath = Paths.get(".env");
+            if (Files.exists(envPath)) {
+                System.out.println("Reading configuration from local .env file...");
+                try (Stream<String> lines = Files.lines(envPath)) {
+                    return lines
+                            .filter(line -> line.trim().startsWith(APP_CONFIG_ENV_VAR + "="))
+                            .map(line -> line.split("=", 2)[1].trim())
+                            .findFirst()
+                            .orElse(null);
+                }
+            }
+        } catch (Exception ignored) {
+            // Ignore parsing errors
+        }
+        return null;
+    }
+
+    private Properties fetchConfiguration(ConfigurationClient client, TokenCredential credential, boolean isProduction) {
+        Properties properties = new Properties();
+        SettingSelector selector = new SettingSelector();
+
+        // Fetch keys with no label (\0) AND 'production' label if applicable
+        if (isProduction) {
+            selector.setLabelFilter("\0,production");
+        } else {
+            selector.setLabelFilter("\0");
+        }
+
+        for (ConfigurationSetting setting : client.listConfigurationSettings(selector)) {
+            if (setting.getKey() == null || setting.getValue() == null) continue;
+
+            String key = setting.getKey();
+            String value = setting.getValue();
+            String label = setting.getLabel();
+
+            // Handle Key Vault References
+            if (KEY_VAULT_CONTENT_TYPE.equals(setting.getContentType())) {
+                try {
+                    value = resolveKeyVaultSecret(value, credential);
+                    System.out.println("Resolved Key Vault Secret for: " + key);
+                } catch (Exception e) {
+                    System.err.println("ERROR: Could not resolve secret for " + key + ". Using raw value.");
+                    e.printStackTrace();
+                }
+            }
+
+            // Priority Logic: Add if new, or overwrite if Production label matches
+            if (!properties.containsKey(key)) {
+                properties.setProperty(key, value);
+                System.out.println("Loaded: " + key);
+            } else if (isProduction && "production".equals(label)) {
+                properties.setProperty(key, value);
+                System.out.println("Overwriting with Production value: " + key);
+            }
+        }
+        return properties;
+    }
+
+    private String resolveKeyVaultSecret(String jsonValue, TokenCredential credential) throws Exception {
+        JsonNode root = jsonMapper.readTree(jsonValue);
+        URI secretUri = new URI(root.get("uri").asText());
+
         String vaultUrl = "https://" + secretUri.getHost();
 
-        // 3. Get or Create Secret Client
         SecretClient secretClient = secretClientCache.computeIfAbsent(vaultUrl, url ->
                 new SecretClientBuilder()
                         .vaultUrl(url)
@@ -140,12 +155,10 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
                         .buildClient()
         );
 
-        // 4. Extract Secret Name
-        // URI Path is usually: /secrets/<name>/<version>
+        // URI Path format: /secrets/<name>/<version>
         String[] pathSegments = secretUri.getPath().split("/");
-        String secretName = pathSegments[2]; // Index 2 is the name
+        String secretName = pathSegments[2];
 
-        // 5. Fetch Value
         return secretClient.getSecret(secretName).getValue();
     }
 }
