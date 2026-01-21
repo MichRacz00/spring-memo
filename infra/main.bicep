@@ -57,7 +57,7 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
           env: [
             {
                 name: 'ENVIRONMENT'
-                value: 'production'
+                value: ${environment}
             }
           ]
         }
@@ -256,9 +256,18 @@ resource kvCosmosDbName 'Microsoft.AppConfiguration/configurationStores/keyValue
 
 resource kvStorageEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.storage.blob.endpoint$${environment}'
+  name: 'database.endpoint$${environment}'
   properties: {
     value: storage.properties.primaryEndpoints.blob
+    contentType: 'text/plain'
+  }
+}
+
+resource kvKeyVaultEndpoint 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'keyvault.endpoint$${environment}'
+  properties: {
+    value: keyVault.properties.vaultUri
     contentType: 'text/plain'
   }
 }
@@ -274,9 +283,9 @@ resource kvStorageAccount 'Microsoft.AppConfiguration/configurationStores/keyVal
 
 resource kvRedirectUri 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
-  name: 'spring.cloud.azure.active-directory.post-logout-redirect-uri'
+  name: 'spring.cloud.azure.active-directory.post-logout-redirect-uri$${environment}'
   properties: {
-    value: 'https://${app.properties.configuration.ingress.fqdn}$${environment}'
+    value: 'https://${app.properties.configuration.ingress.fqdn}'
     contentType: 'text/plain'
   }
 }
