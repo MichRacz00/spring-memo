@@ -46,11 +46,10 @@ jobs:
           
           if [ -n "$DELETED_NAME" ]; then
             echo "⚠️ Found soft-deleted Key Vault: $DELETED_NAME"
-          
-            echo "Recovering vault..."
-            az keyvault recover --name $DELETED_NAME --location polandcentral
-            echo "Waiting for recovery..."
-            sleep 20
+            echo "Purging vault to allow fresh creation..."
+            az keyvault purge --name $DELETED_NAME --location polandcentral
+            echo "Waiting for purge to complete..."
+            sleep 30
           fi
 
       - name: Fetch Existing Secret
