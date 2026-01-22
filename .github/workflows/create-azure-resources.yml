@@ -40,6 +40,19 @@ jobs:
           KV_NAME=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} --query "[0].name" -o tsv || echo "")
           echo "kv_name=$KV_NAME" >> $GITHUB_OUTPUT
 
+      - name: Recover Soft-Deleted Key Vaults
+        run: |
+          DELETED_NAME=$(az keyvault list-deleted --resource-type vault --query "[?starts_with(name, 'kv-${{ env.APP_NAME }}')].name" -o tsv | head -n 1)
+          
+          if [ -n "$DELETED_NAME" ]; then
+            echo "⚠️ Found soft-deleted Key Vault: $DELETED_NAME"
+          
+            echo "Recovering vault..."
+            az keyvault recover --name $DELETED_NAME --location polandcentral
+            echo "Waiting for recovery..."
+            sleep 20
+          fi
+
       - name: Fetch Existing Secret
         id: fetch-secret
         if: steps.find-kv.outputs.kv_name != ''
