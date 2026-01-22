@@ -5,7 +5,6 @@ param environment string
 
 // --- INFRASTRUCTURE REFERENCES (Passed from main.bicep) ---
 param appConfigName string
-param keyVaultName string
 
 // Log Analytics & Environment (required)
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
@@ -36,10 +35,6 @@ resource env 'Microsoft.App/managedEnvironments@2023-05-01' = {
 // Reference Existing Infrastructure (To write properties)
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
   name: appConfigName
-}
-
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
-  name: keyVaultName
 }
 
 // Container App

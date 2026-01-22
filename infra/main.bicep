@@ -57,9 +57,7 @@ module app './modules/app.bicep' = {
     appName: appName
     containerImage: containerImage
     environment: environment
-
     appConfigName: config.outputs.appConfigName
-    keyVaultName: config.outputs.keyVaultName
   }
 }
 

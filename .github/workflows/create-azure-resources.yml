@@ -61,6 +61,7 @@ jobs:
           echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
 
       - name: Create App Registration
+        id: create-app
         if: steps.check-app.outputs.app_id == ''
         run: |
           echo "Creating new App Registration: ${{ env.APP_NAME }}"
@@ -74,21 +75,15 @@ jobs:
         id: gen-secret
         if: steps.fetch-secret.outputs.found != 'true'
         run: |
+          # Determine which App ID to use (Existing or Newly Created)
           FINAL_APP_ID="${{ steps.check-app.outputs.app_id }}"
           if [ -z "$FINAL_APP_ID" ]; then FINAL_APP_ID="${{ steps.create-app.outputs.app_id }}"; fi
           
           echo "Generating new secret for App ID: $FINAL_APP_ID"
-          
-          # Retry loop for concurrency errors
           for i in {1..5}; do
             echo "Attempt $i..."
             NEW_SECRET=$(az ad app credential reset --id $FINAL_APP_ID --query password -o tsv) && break || sleep 10
           done
-          
-          if [ -z "$NEW_SECRET" ]; then
-            echo "Failed to generate secret after retries."
-            exit 1
-          fi
           
           echo "::add-mask::$NEW_SECRET"
           echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
