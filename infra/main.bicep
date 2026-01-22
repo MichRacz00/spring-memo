@@ -8,11 +8,6 @@ param location string = 'polandcentral'
 param resourceGroupName string = 'rg-${appName}'
 param environment string = 'production'
 
-@secure()
-param adClientId string
-@secure()
-param adClientSecret string
-
 // Create the Resource Group
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: resourceGroupName
@@ -62,12 +57,16 @@ module app './modules/app.bicep' = {
     appName: appName
     containerImage: containerImage
     environment: environment
+
+    appConfigName: config.outputs.appConfigName
+    keyVaultName: config.outputs.keyVaultName
   }
 }
 
 //  Assign RBAC Permissions
 module appPermissions './modules/permissions.bicep' = {
   name: 'assign-managed-identity-roles'
+  scope: rg
   params: {
     principalId: app.outputs.principalId
     keyVaultName: config.outputs.keyVaultName
