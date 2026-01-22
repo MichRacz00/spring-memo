@@ -32,10 +32,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enableRbacAuthorization: true
     enabledForTemplateDeployment: true
   }
-  // CRITICAL: Wait for the recovery script to finish
-    dependsOn: [
-      recoverKeyVault
-    ]
 }
 
 // Save key vault endpoint in app config
