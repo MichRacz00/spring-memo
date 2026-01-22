@@ -19,6 +19,7 @@ permissions:
 env:
   RESOURCE_GROUP: rg-memo-app
   APP_NAME: memo
+  LOCATION: polandcentral
   
 jobs:
   deploy-infrastructure:
@@ -40,16 +41,15 @@ jobs:
           KV_NAME=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} --query "[0].name" -o tsv || echo "")
           echo "kv_name=$KV_NAME" >> $GITHUB_OUTPUT
 
-      - name: Recover Soft-Deleted Key Vaults
+      - name: Purge Soft-Deleted Key Vault
         run: |
           DELETED_NAME=$(az keyvault list-deleted --resource-type vault --query "[?starts_with(name, 'kv-${{ env.APP_NAME }}')].name" -o tsv | head -n 1)
           
           if [ -n "$DELETED_NAME" ]; then
             echo "⚠️ Found soft-deleted Key Vault: $DELETED_NAME"
             echo "Purging vault to allow fresh creation..."
-            az keyvault purge --name $DELETED_NAME --location polandcentral
+            az keyvault purge --name $DELETED_NAME --location ${{ env.LOCATION }}
             echo "Waiting for purge to complete..."
-            sleep 30
           fi
 
       - name: Fetch Existing Secret
@@ -127,10 +127,12 @@ jobs:
         uses: azure/arm-deploy@v2
         with:
           scope: subscription
-          region: polandcentral
+          region: ${{ env.LOCATION }}
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           template: ./infra/main.bicep
           parameters: >
             appName=${{ env.APP_NAME }}
             containerImage=${{ env.DOCKER_IMAGE }}
+            adClientId=${{ env.AD_CLIENT_ID }}
+            adClientSecret=${{ env.AD_CLIENT_SECRET }}
           failOnStdErr: false

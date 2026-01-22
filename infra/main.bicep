@@ -4,6 +4,11 @@ targetScope = 'subscription'
 param containerImage string // Passed from GitHub Actions. Should be configured from github context.
 param appName string // Passed from GitHub Actions
 
+@secure()
+param adClientId string
+@secure()
+param adClientSecret string
+
 param location string = 'polandcentral'
 param resourceGroupName string = 'rg-${appName}'
 param environment string = 'production'
@@ -22,6 +27,9 @@ module config './modules/config.bicep' = {
         location: location
         appName: appName
         environment: environment
+
+        adClientId: adClientId
+        adClientSecret: adClientSecret
     }
 }
 

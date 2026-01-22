@@ -1,6 +1,11 @@
 param location string
 param appName string
 
+@secure()
+param adClientId string
+@secure()
+param adClientSecret string
+
 param environment string
 
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
@@ -18,10 +23,8 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
   }
 }
 
-var keyVaultName = 'kv-${appName}-${uniqueString(resourceGroup().id)}'
-
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: keyVaultName
+  name: 'kv-${appName}-${uniqueString(resourceGroup().id)}'
   location: location
   properties: {
     sku: { family: 'A', name: 'standard' }
@@ -44,6 +47,32 @@ resource kvKeyVaultEndpoint 'Microsoft.AppConfiguration/configurationStores/keyV
     contentType: 'text/plain'
   }
 }
+
+// -------------- entra ID config --------------
+resource secretAdClientSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
+  parent: keyVault
+  name: 'client-secret'
+  properties: { value: adClientSecret }
+}
+
+resource kvClientSecret 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.active-directory.credential.client-secret'
+  properties: {
+    value: secretAdClientSecret.properties.secretUri
+    contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
+  }
+}
+
+resource kvClientId 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.active-directory.credential.client-id'
+  properties: {
+    value: adClientId
+    contentType: 'text/plain'
+  }
+}
+
 
 // -------------- static config below --------------
 resource kvMaxFileSize 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
