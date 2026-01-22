@@ -18,7 +18,7 @@ permissions:
 
 env:
   RESOURCE_GROUP: rg-memo-app
-  APP_NAME: memo
+  APP_NAME: memodev
   
 jobs:
   deploy-infrastructure:
