@@ -1,10 +1,10 @@
 param location string
 param appName string
 
-param environment string = 'production'
+param environment string
 
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
-  name: 'config-${appName}'
+  name: 'config-${appName}-${uniqueString(resourceGroup().id)}'
   location: location
   sku: {
     name: 'free'

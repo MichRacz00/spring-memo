@@ -97,4 +97,4 @@ resource kvRedirectUri 'Microsoft.AppConfiguration/configurationStores/keyValues
   }
 }
 
-output principalId string = app.identity.principalId
+output appName string = app.name

@@ -21,6 +21,7 @@ module config './modules/config.bicep' = {
     params: {
         location: location
         appName: appName
+        environment: environment
     }
 }
 
@@ -66,7 +67,7 @@ module appPermissions './modules/permissions.bicep' = {
   name: 'assign-managed-identity-roles'
   scope: rg
   params: {
-    principalId: app.outputs.principalId
+    appName: app.outputs.appName
     keyVaultName: config.outputs.keyVaultName
     appConfigName: config.outputs.appConfigName
     storageAccountName: stg.outputs.name

@@ -1,9 +1,14 @@
 
-param principalId string
-
+param appName string
 param keyVaultName string
 param appConfigName string
 param storageAccountName string
+
+resource app 'Microsoft.App/containerApps@2023-05-01' existing = {
+  name: appName
+}
+
+var principalId = app.identity.principalId
 
 // Key Vault Secrets User
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
