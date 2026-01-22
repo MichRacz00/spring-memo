@@ -263,7 +263,7 @@ resource kvStorageAccount 'Microsoft.AppConfiguration/configurationStores/keyVal
   parent: appConfig
   name: 'spring.cloud.azure.storage.blob.account-name$${environment}'
   properties: {
-    value: storage.properties.primaryEndpoints.blob
+    value: storage.name
     contentType: 'text/plain'
   }
 }
