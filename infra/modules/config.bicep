@@ -71,6 +71,15 @@ resource kvClientSecret 'Microsoft.AppConfiguration/configurationStores/keyValue
   }
 }
 
+resource kvClientId 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.active-directory.credential.client-id'
+  properties: {
+    value: adClientId
+    contentType: 'text/plain'
+  }
+}
+
 // -------------- static config below --------------
 resource kvMaxFileSize 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
   parent: appConfig
