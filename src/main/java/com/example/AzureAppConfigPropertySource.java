@@ -40,6 +40,7 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         try {
+
             System.out.println("--- Starting Azure App Config Load ---");
 
             // 1. Resolve Variables (Cloud Env -> Local .env)

@@ -18,8 +18,40 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
   }
 }
 
+var keyVaultName = 'kv-${appName}-${uniqueString(resourceGroup().id)}'
+
+resource recoverKeyVault 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'recover-kv-script'
+  location: location
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.40.0'
+    retentionInterval: 'PT1H'
+    timeout: 'PT5M'
+    environmentVariables: [
+      { name: 'KV_NAME', value: keyVaultName }
+      { name: 'LOCATION', value: location }
+    ]
+    scriptContent: '''
+      echo "Checking for soft-deleted Key Vault: $KV_NAME"
+
+      # Check if vault exists in deleted state
+      DELETED_STATE=$(az keyvault list-deleted --resource-type vault --query "[?name=='$KV_NAME'].id" -o tsv)
+
+      if [ -n "$DELETED_STATE" ]; then
+        echo "Found soft-deleted vault. Recovering..."
+        az keyvault recover --name $KV_NAME --location $LOCATION
+        echo "Recovery command sent. Waiting for propagation..."
+        sleep 20
+      else
+        echo "No soft-deleted vault found. Proceeding with creation."
+      fi
+    '''
+  }
+}
+
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: 'kv-${appName}-${uniqueString(resourceGroup().id)}'
+  name: keyVaultName
   location: location
   properties: {
     sku: { family: 'A', name: 'standard' }
@@ -27,6 +59,10 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enableRbacAuthorization: true
     enabledForTemplateDeployment: true
   }
+  // CRITICAL: Wait for the recovery script to finish
+    dependsOn: [
+      recoverKeyVault
+    ]
 }
 
 // Save key vault endpoint in app config
