@@ -55,15 +55,6 @@ resource kvClientSecret 'Microsoft.AppConfiguration/configurationStores/keyValue
   parent: appConfig
   name: 'spring.cloud.azure.active-directory.credential.client-secret'
   properties: {
-    value: secretAdClientSecret.properties.secretUri
-    contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
-  }
-}
-
-resource kvClientSecret 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
-  parent: appConfig
-  name: 'spring.cloud.azure.active-directory.credential.client-secret'
-  properties: {
     value: string({
       uri: secretAdClientSecret.properties.secretUri
     })
