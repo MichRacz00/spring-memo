@@ -70,6 +70,10 @@ resource app 'Microsoft.App/containerApps@2023-05-01' = {
               name: 'AZURE_TENANT_ID'
               value: subscription().tenantId
             }
+            { // TODO: see if this actually changes anything or ideally move to config
+              name: 'SPRING_CLOUD_AZURE_COSMOS_ENABLED'
+              value: 'false'
+            }
           ]
           probes: [
             {
