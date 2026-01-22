@@ -33,7 +33,72 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            
+
+      - name: Find Key Vault
+        id: find-kv
+        run: |
+          KV_NAME=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} --query "[0].name" -o tsv || echo "")
+          echo "kv_name=$KV_NAME" >> $GITHUB_OUTPUT
+
+      - name: Fetch Existing Secret
+        id: fetch-secret
+        if: steps.find-kv.outputs.kv_name != ''
+        continue-on-error: true # Don't fail if secret is missing
+        run: |
+          SECRET=$(az keyvault secret show --vault-name ${{ steps.find-kv.outputs.kv_name }} --name "client-secret" --query value -o tsv)
+          if [ -n "$SECRET" ]; then
+            echo "::add-mask::$SECRET"
+            echo "ad_client_secret=$SECRET" >> $GITHUB_OUTPUT
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check App Registration
+        id: check-app
+        run: |
+          APP_ID=$(az ad app list --display-name "${{ env.APP_NAME }}" --query "[0].appId" -o tsv)
+          echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
+
+      - name: Create App Registration
+        if: steps.check-app.outputs.app_id == ''
+        run: |
+          echo "Creating new App Registration: ${{ env.APP_NAME }}"
+          NEW_APP_ID=$(az ad app create --display-name "${{ env.APP_NAME }}" --query appId -o tsv)
+          echo "app_id=$NEW_APP_ID" >> $GITHUB_OUTPUT
+
+      # Run this if:
+      # We didn't find a secret in KV (Step 2 found=false)
+      # OR We just created a new App (Step 4 ran)
+      - name: Generate New Secret
+        id: gen-secret
+        if: steps.fetch-secret.outputs.found != 'true'
+        run: |
+          # Determine which App ID to use (Existing or Newly Created)
+          FINAL_APP_ID="${{ steps.check-app.outputs.app_id }}"
+          if [ -z "$FINAL_APP_ID" ]; then FINAL_APP_ID="${{ steps.create-app.outputs.app_id }}"; fi
+          
+          echo "Generating new secret for App ID: $FINAL_APP_ID"
+          NEW_SECRET=$(az ad app credential reset --id $FINAL_APP_ID --query password -o tsv)
+          
+          echo "::add-mask::$NEW_SECRET"
+          echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
+
+      - name: Set Final Variables
+        id: final-vars
+        run: |
+          if [ -n "${{ steps.check-app.outputs.app_id }}" ]; then
+            echo "AD_CLIENT_ID=${{ steps.check-app.outputs.app_id }}" >> $GITHUB_ENV
+          else
+            echo "AD_CLIENT_ID=${{ steps.create-app.outputs.app_id }}" >> $GITHUB_ENV
+          fi
+          
+          if [ "${{ steps.fetch-secret.outputs.found }}" == "true" ]; then
+            echo "AD_CLIENT_SECRET=${{ steps.fetch-secret.outputs.ad_client_secret }}" >> $GITHUB_ENV
+          else
+            echo "AD_CLIENT_SECRET=${{ steps.gen-secret.outputs.ad_client_secret }}" >> $GITHUB_ENV
+          fi
+
       - name: Get Docker Image Name
         env:
           REPOSITORY: ${{ github.repository }}
