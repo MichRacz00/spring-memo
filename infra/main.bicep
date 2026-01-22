@@ -8,19 +8,70 @@ param location string = 'polandcentral'
 param resourceGroupName string = 'rg-${appName}'
 param environment string = 'production'
 
-// 1. Create the Resource Group
+@secure()
+param adClientId string
+@secure()
+param adClientSecret string
+
+// Create the Resource Group
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: resourceGroupName
   location: location
 }
 
-module appResources './resources.bicep' = {
-  name: 'deploy-app-resources'
+// Create App Config instance and Key Vault
+module config './modules/config.bicep' = {
+    name: 'create-app-config-and-key-vault'
+    scope: rg
+    params: {
+        location: location
+        appName: appName
+    }
+}
+
+// Create Cosmos Database
+module database './modules/database.bicep' = {
+    name: 'deploy-database'
+    scope: rg
+    params: {
+        location: location
+        appName: appName
+        environment: environment
+        appConfigName: config.outputs.appConfigName
+        keyVaultName: config.outputs.keyVaultName
+    }
+}
+
+module stg './modules/storage.bicep' = {
+    name: 'deploy-storage'
+    scope: rg
+    params: {
+        location: location
+        appName: appName
+        environment: environment
+        appConfigName: config.outputs.appConfigName
+    }
+}
+
+// Create resources
+module app './modules/app.bicep' = {
+  name: 'deploy-app'
   scope: rg
   params: {
     location: location
     appName: appName
     containerImage: containerImage
     environment: environment
+  }
+}
+
+//  Assign RBAC Permissions
+module appPermissions './modules/permissions.bicep' = {
+  name: 'assign-managed-identity-roles'
+  params: {
+    principalId: app.outputs.principalId
+    keyVaultName: config.outputs.keyVaultName
+    appConfigName: config.outputs.appConfigName
+    storageAccountName: stg.outputs.name
   }
 }
