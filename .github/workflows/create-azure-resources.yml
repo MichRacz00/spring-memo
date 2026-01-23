@@ -27,7 +27,7 @@ jobs:
     outputs:
       ad_client_id: ${{ steps.output-vars.outputs.ad_client_id }}
       ad_client_secret: ${{ steps.output-vars.outputs.ad_client_secret }}
-      docker_image: ${{ steps.docker.outputs.image }}
+      docker_image: ${{ steps.docker.outputs.docker_image }}
 
     steps:
       - name: Azure Login
