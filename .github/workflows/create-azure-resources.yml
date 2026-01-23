@@ -121,11 +121,16 @@ jobs:
             NEW_SECRET=$(az ad app credential reset --id $FINAL_APP_ID --query password -o tsv) && break || sleep 10
           done
           
-          # TODO: remove
-          #echo "::add-mask::$NEW_SECRET"
-          echo "Secret"
-          echo ${#$NEW_SECRET}
-          echo $NEW_SECRET
+          # Debugging (Use the correct variable name)
+          echo "Secret Length: ${#NEW_SECRET}"
+          
+          if [ -z "$NEW_SECRET" ]; then
+             echo "::error::Failed to generate secret after 5 attempts."
+             exit 1
+          fi
+
+          # Mask and Output
+          echo "::add-mask::$NEW_SECRET"
           echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
 
       - name: Set Output Variables
