@@ -131,7 +131,6 @@ jobs:
 
           # Mask and Output
           echo "::add-mask::$NEW_SECRET"
-          echo ${#NEW_SECRET}
           echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
 
       - name: Set Output Variables
@@ -156,8 +155,6 @@ jobs:
           fi
           
           echo "ad_client_secret=$SECRET" >> $GITHUB_OUTPUT
-          # TODO: remove
-          echo $SECRET
 
   deploy-infrastructure:
     runs-on: ubuntu-latest
@@ -175,10 +172,14 @@ jobs:
 
       - name: Print Debug
         run: |
-          echo "Client ID"
-          echo ${{ needs.prerequisites.outputs.ad_client_id }}
-          echo "Secret"
-          echo ${{ needs.prerequisites.outputs.ad_client_secret }}
+          echo "Secret Length: ${#MY_SECRET}"
+          
+          # Optional: Check if it's empty
+          if [ -z "$MY_SECRET" ]; then
+            echo "❌ Secret is EMPTY"
+          else
+            echo "✅ Secret is populated"
+          fi
 
       - name: Deploy Infrastructure (Bicep)
         id: deploy
