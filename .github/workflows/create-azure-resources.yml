@@ -195,7 +195,7 @@ jobs:
              exit 1
           fi
           
-          REDIRECT_URI="${{ steps.deploy.outputs.redirectUri }}"
+          REDIRECT_URI="${{ steps.deploy.outputs.redirectUri }}/login/oauth2/code"
           
           echo $REDIRECT_URI
           
