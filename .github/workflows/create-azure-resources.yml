@@ -81,46 +81,6 @@ jobs:
           NEW_APP_ID=$(az ad app create --display-name "${{ env.APP_NAME }}" --query appId -o tsv)
           echo "app_id=$NEW_APP_ID" >> $GITHUB_OUTPUT
 
-      - name: Configure App Registration for Personal Accounts
-        id: config-app
-        run: |
-          FINAL_APP_ID="${{ steps.check-app.outputs.app_id }}"
-          if [ -z "$FINAL_APP_ID" ]; then FINAL_APP_ID="${{ steps.create-app.outputs.app_id }}"; fi
-          
-          if [ -z "$FINAL_APP_ID" ]; then
-            echo "::error::No App ID found from previous steps."
-            exit 1
-          fi
-
-          APP_OBJECT_ID=""
-          for i in {1..5}; do
-            echo "Attempt $i to get Object ID for AppID: $FINAL_APP_ID..."
-            # Use --filter as it's more robust for Service Principals
-            APP_OBJECT_ID=$(az ad app list --filter "appId eq '$FINAL_APP_ID'" --query "[0].id" -o tsv 2>/dev/null)
-          
-            if [ -n "$APP_OBJECT_ID" ]; then
-              echo "Found Object ID: $APP_OBJECT_ID"
-              break
-            fi
-          
-            echo "Object ID not found yet. Sleeping 10s..."
-            sleep 10
-          done
-          
-          if [ -z "$APP_OBJECT_ID" ]; then
-            echo "::error::Failed to resolve App Object ID for AppID: $FINAL_APP_ID"
-            exit 1
-          fi
-          
-          echo $APP_OBJECT_ID
-          
-          az rest --method PATCH \
-            --uri "https://graph.microsoft.com/v1.0/applications/$APP_OBJECT_ID" \
-            --headers "Content-Type=application/json" \
-            --body '{"signInAudience":"AzureADandPersonalMicrosoftAccount", "api":{"requestedAccessTokenVersion":2}}'
-          
-          echo "App Registration configured successfully."
-
       # Run this if:
       # We didn't find a secret in KV (Step 2 found=false)
       # OR We just created a new App (Step 4 ran)
@@ -171,9 +131,60 @@ jobs:
           region: ${{ env.LOCATION }}
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           template: ./infra/main.bicep
+          deploymentName: main
           parameters: >
             appName=${{ env.APP_NAME }}
             containerImage=${{ env.DOCKER_IMAGE }}
             adClientId=${{ env.AD_CLIENT_ID }}
             adClientSecret=${{ env.AD_CLIENT_SECRET }}
           failOnStdErr: false
+
+      - name: Configure App Registration for Personal Accounts
+        id: config-app
+        run: |
+          FINAL_APP_ID="${{ steps.check-app.outputs.app_id }}"
+          if [ -z "$FINAL_APP_ID" ]; then FINAL_APP_ID="${{ steps.create-app.outputs.app_id }}"; fi
+          
+          if [ -z "$FINAL_APP_ID" ]; then
+            echo "::error::No App ID found from previous steps."
+            exit 1
+          fi
+
+          APP_OBJECT_ID=""
+          for i in {1..5}; do
+            echo "Attempt $i to get Object ID for AppID: $FINAL_APP_ID..."
+            # Use --filter as it's more robust for Service Principals
+            APP_OBJECT_ID=$(az ad app list --filter "appId eq '$FINAL_APP_ID'" --query "[0].id" -o tsv 2>/dev/null)
+          
+            if [ -n "$APP_OBJECT_ID" ]; then
+              echo "Found Object ID: $APP_OBJECT_ID"
+              break
+            fi
+          
+            echo "Object ID not found yet. Sleeping 10s..."
+            sleep 10
+          done
+          
+          if [ -z "$APP_OBJECT_ID" ]; then
+            echo "::error::Failed to resolve App Object ID for AppID: $FINAL_APP_ID"
+            exit 1
+          fi
+          
+          echo "Fetching App URL from deployment 'main'..."
+          REDIRECT_URI=$(az deployment sub show --name main --query properties.outputs.redirectUri -o tsv)
+          
+          if [ -z "$REDIRECT_URI" ]; then
+             echo "::error::Could not find 'redirectUri' output in deployment."
+             exit 1
+          fi
+          
+          az rest --method PATCH \
+            --uri "https://graph.microsoft.com/v1.0/applications/$APP_OBJECT_ID" \
+            --headers "Content-Type=application/json" \
+            --body '{
+                "signInAudience":"AzureADandPersonalMicrosoftAccount",
+                "api":{"requestedAccessTokenVersion":2}
+                "web": { "redirectUris": ["$REDIRECT_URI"] }
+            }'
+          
+          echo "App Registration configured successfully."

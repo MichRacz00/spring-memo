@@ -81,3 +81,5 @@ module appPermissions './modules/permissions.bicep' = {
     storageAccountName: stg.outputs.name
   }
 }
+
+output redirectUri string = app.outputs.redirectUri
