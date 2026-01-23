@@ -4,9 +4,9 @@ targetScope = 'subscription'
 param containerImage string // Passed from GitHub Actions. Should be configured from github context.
 param appName string // Passed from GitHub Actions
 
-//@secure()
+@secure()
 param adClientId string
-//@secure()
+@secure()
 param adClientSecret string
 
 param location string = 'polandcentral'
