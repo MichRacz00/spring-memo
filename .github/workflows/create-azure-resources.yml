@@ -122,8 +122,10 @@ jobs:
           
           if [ "${{ steps.fetch-secret.outputs.found }}" == "true" ]; then
             echo "ad_client_secret=${{ steps.fetch-secret.outputs.ad_client_secret }}" >> $GITHUB_OUTPUT
+          echo steps.fetch-secret.outputs.ad_client_secret
           else
             echo "ad_client_secret=${{ steps.gen-secret.outputs.ad_client_secret }}" >> $GITHUB_OUTPUT
+            echo steps.fetch-secret.outputs.ad_client_secret
           fi
 
   deploy-infrastructure:
