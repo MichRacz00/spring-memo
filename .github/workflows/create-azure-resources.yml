@@ -22,7 +22,7 @@ env:
   LOCATION: polandcentral
   
 jobs:
-  configure-key-vault:
+  purge-exisiting-keyvault:
     runs-on: ubuntu-latest
     steps:
       - name: Azure Login
@@ -101,6 +101,7 @@ jobs:
             exit 1
           fi
 
+          APP_OBJECT_ID=""
           for i in {1..5}; do
             echo "Attempt $i to get Object ID for AppID: $FINAL_APP_ID..."
             # Use --filter as it's more robust for Service Principals
