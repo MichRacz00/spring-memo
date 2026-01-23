@@ -256,9 +256,9 @@ jobs:
           LATEST_REVISION=$(az containerapp revision list \
             --name ${{ env.APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
-            --query "sort_by([], &createdTime) | [-1].name" \
+            --query "sort_by(@, &properties.createdTime) | [-1].name" \
             -o tsv)
-          
+  
           if [ -z "$LATEST_REVISION" ]; then
             echo "::error::Could not find a revision to restart."
             exit 1
