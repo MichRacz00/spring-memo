@@ -98,4 +98,4 @@ resource kvRedirectUri 'Microsoft.AppConfiguration/configurationStores/keyValues
 }
 
 output appName string = app.name
-output redirectUri string = ${app.properties.configuration.ingress.fqdn}
+output redirectUri string = app.properties.configuration.ingress.fqdn
