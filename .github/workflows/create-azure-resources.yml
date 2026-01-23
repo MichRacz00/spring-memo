@@ -114,11 +114,10 @@ jobs:
           
           echo $APP_OBJECT_ID
           
-          az ad app update \
-            --id $APP_OBJECT_ID \
-            --set signInAudience=AzureADandPersonalMicrosoftAccount \
-            --set accessTokenAcceptedVersion=2
-            --debug
+          az rest --method PATCH \
+            --uri "https://graph.microsoft.com/v1.0/applications/$APP_OBJECT_ID" \
+            --headers "Content-Type=application/json" \
+            --body '{"signInAudience":"AzureADandPersonalMicrosoftAccount", "api":{"requestedAccessTokenVersion":2}}'
           
           echo "App Registration configured successfully."
 
