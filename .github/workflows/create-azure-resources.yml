@@ -141,7 +141,6 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
             
       - name: Deploy Infrastructure (Bicep)
-        if: false
         id: deploy
         uses: azure/arm-deploy@v2
         with:
