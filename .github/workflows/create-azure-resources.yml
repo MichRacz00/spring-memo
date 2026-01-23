@@ -192,7 +192,7 @@ jobs:
             adClientSecret=${{ steps.decode.outputs.ad_client_secret }}
           failOnStdErr: false
 
-      - name: Configure App Registration for Personal Accounts
+      - name: Configure App Registration
         id: config-app
         run: |
           FINAL_APP_ID="${{ needs.prerequisites.outputs.ad_client_id }}"
