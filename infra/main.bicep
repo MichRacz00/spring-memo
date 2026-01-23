@@ -82,7 +82,7 @@ module appPermissions './modules/permissions.bicep' = {
   }
 }
 
-module debug './modules/debug.bicep' = {
+module debug 'debug.bicep' = {
   name: 'debug-deployment'
   scope: rg // <--- Now this works!
   params: {
