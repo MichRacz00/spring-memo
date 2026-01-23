@@ -89,8 +89,6 @@ jobs:
           echo "Creating new App Registration: ${{ env.APP_NAME }}"
           NEW_APP_ID=$(az ad app create --display-name "${{ env.APP_NAME }}" --query appId -o tsv)
           echo "app_id=$NEW_APP_ID" >> $GITHUB_OUTPUT
-          
-            # ... (Previous steps: Check App Registration, Create App Registration) ...
 
       - name: Configure App Registration for Personal Accounts
         id: config-app
@@ -100,7 +98,15 @@ jobs:
           
           echo "Configuring App Registration ($FINAL_APP_ID) for Personal Accounts..."
           
-          APP_OBJECT_ID=$(az ad app show --id $FINAL_APP_ID --query id -o tsv)
+          for i in {1..5}; do
+            echo "Attempt $i to get Object ID..."
+            APP_OBJECT_ID=$(az ad app show --id $FINAL_APP_ID --query id -o tsv 2>/dev/null)
+            if [ -n "$APP_OBJECT_ID" ]; then
+              break
+            fi
+            echo "Object ID not found yet. Sleeping 10s..."
+            sleep 10
+          done
           
           az ad app update \
             --id $APP_OBJECT_ID \
