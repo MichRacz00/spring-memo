@@ -168,7 +168,7 @@ jobs:
         run: |
           ENCODED="${{ needs.prerequisites.outputs.ad_client_secret }}"
           DECODED=$(echo "$ENCODED" | base64 --decode)
-          echo "Secret Length: ${#MY_SECRET}"
+          echo "Secret Length: ${#DECODED}"
           
           # Optional: Check if it's empty
           if [ -z "DECODED" ]; then
