@@ -22,6 +22,16 @@ env:
   LOCATION: polandcentral
   
 jobs:
+  configure-key-vault:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
   deploy-infrastructure:
     runs-on: ubuntu-latest
     steps:
@@ -79,6 +89,25 @@ jobs:
           echo "Creating new App Registration: ${{ env.APP_NAME }}"
           NEW_APP_ID=$(az ad app create --display-name "${{ env.APP_NAME }}" --query appId -o tsv)
           echo "app_id=$NEW_APP_ID" >> $GITHUB_OUTPUT
+          
+            # ... (Previous steps: Check App Registration, Create App Registration) ...
+
+      - name: Configure App Registration for Personal Accounts
+        id: config-app
+        run: |
+          FINAL_APP_ID="${{ steps.check-app.outputs.app_id }}"
+          if [ -z "$FINAL_APP_ID" ]; then FINAL_APP_ID="${{ steps.create-app.outputs.app_id }}"; fi
+          
+          echo "Configuring App Registration ($FINAL_APP_ID) for Personal Accounts..."
+          
+          APP_OBJECT_ID=$(az ad app show --id $FINAL_APP_ID --query id -o tsv)
+          
+          az ad app update \
+            --id $APP_OBJECT_ID \
+            --set signInAudience=AzureADandPersonalMicrosoftAccount \
+            --set accessTokenAcceptedVersion=2
+          
+          echo "App Registration configured successfully."
 
       # Run this if:
       # We didn't find a secret in KV (Step 2 found=false)

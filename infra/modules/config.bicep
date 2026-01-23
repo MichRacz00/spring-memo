@@ -117,5 +117,14 @@ resource kvGraphScopes 'Microsoft.AppConfiguration/configurationStores/keyValues
   }
 }
 
+resource kvDisableCosmosInjection 'Microsoft.AppConfiguration/configurationStores/keyValues@2023-03-01' = {
+  parent: appConfig
+  name: 'spring.cloud.azure.cosmos.enabled'
+  properties: {
+    value: 'false'
+    contentType: 'text/plain'
+  }
+}
+
 output appConfigName string = appConfig.name
 output keyVaultName string = keyVault.name
