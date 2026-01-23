@@ -84,6 +84,7 @@ module appPermissions './modules/permissions.bicep' = {
 
 resource debugScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: 'debug-params'
+  scope: rg
   location: location
   kind: 'AzureCLI'
   properties: {

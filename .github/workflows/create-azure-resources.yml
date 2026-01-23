@@ -68,7 +68,7 @@ jobs:
           fi
 
       # Needed to refresh login token (expires in 5-10 mins)
-      - name: Refresh Azure Login
+      - name: Azure Login (Refresh)
         uses: azure/login@v2
         if: steps.purge-kv.outputs.purged == 'true'
         with:
