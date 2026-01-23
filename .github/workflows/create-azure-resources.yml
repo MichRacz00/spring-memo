@@ -121,9 +121,6 @@ jobs:
             NEW_SECRET=$(az ad app credential reset --id $FINAL_APP_ID --query password -o tsv) && break || sleep 10
           done
           
-          # Debugging (Use the correct variable name)
-          echo "Secret Length: ${#NEW_SECRET}"
-          
           if [ -z "$NEW_SECRET" ]; then
              echo "::error::Failed to generate secret after 5 attempts."
              exit 1
@@ -164,17 +161,16 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Print Debug
+      - name: Decode Secret
         run: |
           ENCODED="${{ needs.prerequisites.outputs.ad_client_secret }}"
           DECODED=$(echo "$ENCODED" | base64 --decode)
-          echo "Secret Length: ${#DECODED}"
           
-          # Optional: Check if it's empty
-          if [ -z "DECODED" ]; then
-            echo "❌ Secret is EMPTY"
+          if [ -z "$DECODED" ]; then
+            echo "::error::Secret failed to decode or is empty! Stopping workflow."
+            exit 1
           else
-            echo "✅ Secret is populated"
+            echo "Decoded secret"
           fi
           
           echo "ad_client_secret=$DECODED" >> $GITHUB_OUTPUT
