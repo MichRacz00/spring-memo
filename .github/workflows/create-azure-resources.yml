@@ -119,6 +119,21 @@ jobs:
           else
             echo "ad_client_id=${{ steps.create-app.outputs.app_id }}" >> $GITHUB_OUTPUT
           fi
+          
+          if [ "${{ steps.fetch-secret.outputs.found }}" == "true" ]; then
+            SECRET="${{ steps.fetch-secret.outputs.ad_client_secret }}"
+          else
+            SECRET="${{ steps.gen-secret.outputs.ad_client_secret }}"
+          fi
+          
+          # Safety Check
+          if [ -z "$SECRET" ]; then
+            echo "::error::Client Secret is empty! Neither fetch nor generation provided a value."
+            exit 1
+          fi
+          
+          echo "::add-mask::$SECRET"
+          echo "ad_client_secret=$SECRET" >> $GITHUB_OUTPUT
 
   deploy-infrastructure:
     runs-on: ubuntu-latest
