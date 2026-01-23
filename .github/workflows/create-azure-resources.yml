@@ -181,10 +181,10 @@ jobs:
           az rest --method PATCH \
             --uri "https://graph.microsoft.com/v1.0/applications/$APP_OBJECT_ID" \
             --headers "Content-Type=application/json" \
-            --body "{
-                \"signInAudience\":\"AzureADandPersonalMicrosoftAccount\",
-                \"api\":{\"requestedAccessTokenVersion\":2}
-                \"web\": { \"redirectUris\": [\"$REDIRECT_URI\"] }
-            }"
+            --body '{
+                "signInAudience":"AzureADandPersonalMicrosoftAccount",
+                "api":{"requestedAccessTokenVersion":2},
+                "web": { "redirectUris": ["$REDIRECT_URI"] }
+            }'
           
           echo "App Registration configured successfully."
