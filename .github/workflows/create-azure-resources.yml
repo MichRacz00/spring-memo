@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 env:
-  RESOURCE_GROUP: rg-memo-app
+  RESOURCE_GROUP: rg-memo
   APP_NAME: memo
   LOCATION: polandcentral
   
@@ -249,27 +249,27 @@ jobs:
 
       - name: Restart Container App Revision
         run: |
+          # Use the global environment variable directly
           echo "Restarting Container App: ${{ env.APP_NAME }} in resource group: ${{ env.RESOURCE_GROUP }}"
-
+          
           # Get the latest revision name
-          # We sort by creation time desc to get the newest one
           LATEST_REVISION=$(az containerapp revision list \
             --name ${{ env.APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --query "sort_by([], &createdTime) | [-1].name" \
             -o tsv)
-
+          
           if [ -z "$LATEST_REVISION" ]; then
             echo "::error::Could not find a revision to restart."
             exit 1
           fi
-
+          
           echo "Found latest revision: $LATEST_REVISION"
-
+          
           # Restart the revision
           az containerapp revision restart \
             --name ${{ env.APP_NAME }} \
             --resource-group ${{ env.RESOURCE_GROUP }} \
             --revision $LATEST_REVISION
-
+          
           echo "Container App restarted successfully."
