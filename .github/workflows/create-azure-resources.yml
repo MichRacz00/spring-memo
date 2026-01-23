@@ -38,6 +38,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Get Docker Image Name
+        id: docker
         env:
           REPOSITORY: ${{ github.repository }}
         run: |
