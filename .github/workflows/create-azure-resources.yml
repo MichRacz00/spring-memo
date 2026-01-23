@@ -146,8 +146,9 @@ jobs:
             exit 1
           fi
           
-          echo "::add-mask::$SECRET"
+          #echo "::add-mask::$SECRET"
           echo "ad_client_secret=$SECRET" >> $GITHUB_OUTPUT
+          echo $SECRET
 
   deploy-infrastructure:
     runs-on: ubuntu-latest
