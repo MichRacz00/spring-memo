@@ -216,7 +216,7 @@ jobs:
             exit 1
           fi
           
-          REDIRECT_URI="${{ steps.deploy.outputs.redirectUri }}/login/oauth2/code/azure"
+          REDIRECT_URI="${{ steps.deploy.outputs.redirectUri }}/login/oauth2/code"
           
           echo $REDIRECT_URI
           
