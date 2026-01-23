@@ -194,6 +194,8 @@ jobs:
              exit 1
           fi
           
+          echo $REDIRECT_URI
+          
           az rest --method PATCH \
             --uri "https://graph.microsoft.com/v1.0/applications/$APP_OBJECT_ID" \
             --headers "Content-Type=application/json" \
