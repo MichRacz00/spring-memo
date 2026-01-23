@@ -121,7 +121,8 @@ jobs:
             NEW_SECRET=$(az ad app credential reset --id $FINAL_APP_ID --query password -o tsv) && break || sleep 10
           done
           
-          echo "::add-mask::$NEW_SECRET"
+          # TODO: remove
+          #echo "::add-mask::$NEW_SECRET"
           echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
 
       - name: Set Output Variables
@@ -164,7 +165,9 @@ jobs:
 
       - name: Print Debug
         run: |
+          echo "Client ID"
           echo ${{ needs.prerequisites.outputs.ad_client_id }}
+          echo "Secret"
           echo ${{ needs.prerequisites.outputs.ad_client_secret }}
 
       - name: Deploy Infrastructure (Bicep)
