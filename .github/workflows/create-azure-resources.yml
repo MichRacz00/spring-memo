@@ -25,8 +25,8 @@ jobs:
   prerequisites:
     runs-on: ubuntu-latest
     outputs:
-      ad_client_id: ${{ steps.final-vars.outputs.ad_client_id }}
-      ad_client_secret: ${{ steps.final-vars.outputs.ad_client_secret }}
+      ad_client_id: ${{ steps.output-vars.outputs.ad_client_id }}
+      ad_client_secret: ${{ steps.output-vars.outputs.ad_client_secret }}
       docker_image: ${{ steps.docker.outputs.image }}
 
     steps:
@@ -149,21 +149,21 @@ jobs:
           deploymentName: main
           parameters: >
             appName=${{ env.APP_NAME }}
-            containerImage=${{ env.DOCKER_IMAGE }}
-            adClientId=${{ env.AD_CLIENT_ID }}
-            adClientSecret=${{ env.AD_CLIENT_SECRET }}
+            containerImage=${{ needs.prerequisites.outputs.docker_image }}
+            adClientId=${{ needs.prerequisites.outputs.ad_client_id }}
+            adClientSecret=${{ needs.prerequisites.outputs.ad_client_secret }}
           failOnStdErr: false
 
       - name: Configure App Registration for Personal Accounts
         id: config-app
         run: |
-          FINAL_APP_ID="${{ steps.check-app.outputs.app_id }}"
-          if [ -z "$FINAL_APP_ID" ]; then FINAL_APP_ID="${{ steps.create-app.outputs.app_id }}"; fi
+          FINAL_APP_ID="${{ needs.prerequisites.outputs.ad_client_id }}"
+          #if [ -z "$FINAL_APP_ID" ]; then FINAL_APP_ID="${{ steps.create-app.outputs.app_id }}"; fi
           
-          if [ -z "$FINAL_APP_ID" ]; then
-            echo "::error::No App ID found from previous steps."
-            exit 1
-          fi
+          #if [ -z "$FINAL_APP_ID" ]; then
+          #  echo "::error::No App ID found from previous steps."
+          #  exit 1
+          #fi
 
           APP_OBJECT_ID=""
           for i in {1..5}; do
