@@ -73,7 +73,7 @@ public class MemoController {
             try {
                 CosmosItemResponse<Memo> itemResponse = cosmosContainer.readItem(
                         id,
-                        new PartitionKey(id),
+                        new PartitionKey(userId),
                         Memo.class
                 );
                 existingMemo = itemResponse.getItem();
@@ -90,7 +90,7 @@ public class MemoController {
             }
 
             CosmosItemResponse<Memo> response = cosmosContainer.replaceItem(updatedMemo, id,
-                    new PartitionKey(id), new CosmosItemRequestOptions());
+                    new PartitionKey(userId), new CosmosItemRequestOptions());
 
             return ResponseEntity.ok(response.getItem());
 
@@ -107,7 +107,7 @@ public class MemoController {
         try {
             CosmosItemResponse<Memo> itemResponse = cosmosContainer.readItem(
                     id,
-                    new PartitionKey(id),
+                    new PartitionKey(userId),
                     Memo.class
             );
             Memo existingMemo = itemResponse.getItem();
@@ -115,7 +115,7 @@ public class MemoController {
             if (!existingMemo.getUserId().equals(userId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             } else {
-                cosmosContainer.deleteItem(id, new PartitionKey(id), new CosmosItemRequestOptions());
+                cosmosContainer.deleteItem(id, new PartitionKey(userId), new CosmosItemRequestOptions());
             }
         } catch (com.azure.cosmos.CosmosException e) {
             if (e.getStatusCode() != 404) throw e;
