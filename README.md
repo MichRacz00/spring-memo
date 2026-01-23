@@ -3,7 +3,7 @@
 
 [![Provision Azure Infrastructure](https://github.com/MichRacz00/spring-memo/actions/workflows/create-azure-resources.yml/badge.svg)](https://github.com/MichRacz00/spring-memo/actions/workflows/create-azure-resources.yml)
 
-This project uses a robust **GitHub Actions** workflow (`create-azure-resources.yml`) to manage the entire Azure infrastructure lifecycle. It is designed to be **idempotent** and **self-healing**, handling complex dependencies like Identity, Key Vaults, and Role Assignments automatically. The idea is to create entire project from scratch, including App Registration in the Default Tenannt on Microsoft Entra ID.
+This project uses a robust **GitHub Actions** workflow (`create-azure-resources.yml`) to manage the entire Azure infrastructure lifecycle. It is designed to be **idempotent** and **self-healing**, handling complex dependencies like Identity, Key Vaults, and Role Assignments automatically. Deploys a complete project environment from the ground up, automatically handling App Registration in the default Entra ID tenant within a fresh Azure account.
 
 ### Workflow Architecture
 
