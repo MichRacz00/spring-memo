@@ -171,11 +171,13 @@ jobs:
           echo "Secret Length: ${#MY_SECRET}"
           
           # Optional: Check if it's empty
-          if [ -z "$MY_SECRET" ]; then
+          if [ -z "DECODED" ]; then
             echo "❌ Secret is EMPTY"
           else
             echo "✅ Secret is populated"
           fi
+          
+          echo "ad_client_secret=$DECODED" >> $GITHUB_OUTPUT
 
       - name: Deploy Infrastructure (Bicep)
         id: deploy
