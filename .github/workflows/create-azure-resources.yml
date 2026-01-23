@@ -129,9 +129,7 @@ jobs:
              exit 1
           fi
           
-          # Secrets passed between jobs must be encoded
-          ENCODED_SECRET=$(echo -n "$FINAL_SECRET" | base64 -w 0)
-          echo "ad_client_secret=$ENCODED_SECRET" >> $GITHUB_OUTPUT
+          echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
 
       - name: Set Output Variables
         id: output-vars
@@ -148,13 +146,9 @@ jobs:
             SECRET="${{ steps.gen-secret.outputs.ad_client_secret }}"
           fi
           
-          # Safety Check
-          if [ -z "$SECRET" ]; then
-            echo "::error::Client Secret is empty! Neither fetch nor generation provided a value."
-            exit 1
-          fi
-          
-          echo "ad_client_secret=$SECRET" >> $GITHUB_OUTPUT
+          # Secrets passed between jobs must be encoded
+          ENCODED_SECRET=$(echo -n "$SECRET" | base64 -w 0)
+          echo "ad_client_secret=$ENCODED_SECRET" >> $GITHUB_OUTPUT
 
   deploy-infrastructure:
     runs-on: ubuntu-latest
@@ -173,8 +167,7 @@ jobs:
       - name: Print Debug
         run: |
           ENCODED="${{ needs.prerequisites.outputs.ad_client_secret }}"
-          $MY_SECRET=$(echo "$ENCODED" | base64 --decode)
-          
+          DECODED=$(echo "$ENCODED" | base64 --decode)
           echo "Secret Length: ${#MY_SECRET}"
           
           # Optional: Check if it's empty
