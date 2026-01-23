@@ -4,9 +4,9 @@ targetScope = 'subscription'
 param containerImage string // Passed from GitHub Actions. Should be configured from github context.
 param appName string // Passed from GitHub Actions
 
-@secure()
+//@secure()
 param adClientId string
-@secure()
+//@secure()
 param adClientSecret string
 
 param location string = 'polandcentral'
@@ -79,6 +79,17 @@ module appPermissions './modules/permissions.bicep' = {
     keyVaultName: config.outputs.keyVaultName
     appConfigName: config.outputs.appConfigName
     storageAccountName: stg.outputs.name
+  }
+}
+
+resource debugScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'debug-params'
+  location: location
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.40.0'
+    retentionInterval: 'PT1H'
+    scriptContent: 'echo "AppName: ${adClientId}"; echo "ClientID: ${adClientSecret}"'
   }
 }
 
