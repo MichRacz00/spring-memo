@@ -108,8 +108,7 @@ jobs:
             NEW_SECRET=$(az ad app credential reset --id $FINAL_APP_ID --query password -o tsv) && break || sleep 10
           done
           
-          #echo "::add-mask::$NEW_SECRET"
-          echo $NEW_SECRET
+          echo "::add-mask::$NEW_SECRET"
           echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
 
       - name: Set Output Variables
@@ -123,10 +122,8 @@ jobs:
           
           if [ "${{ steps.fetch-secret.outputs.found }}" == "true" ]; then
             echo "ad_client_secret=${{ steps.fetch-secret.outputs.ad_client_secret }}" >> $GITHUB_OUTPUT
-            echo ${{ steps.gen-secret.outputs.ad_client_secret }}
           else
             echo "ad_client_secret=${{ steps.gen-secret.outputs.ad_client_secret }}" >> $GITHUB_OUTPUT
-            echo ${{ steps.gen-secret.outputs.ad_client_secret }}
           fi
 
   deploy-infrastructure:
@@ -163,14 +160,8 @@ jobs:
         id: config-app
         run: |
           FINAL_APP_ID="${{ needs.prerequisites.outputs.ad_client_id }}"
-          #if [ -z "$FINAL_APP_ID" ]; then FINAL_APP_ID="${{ steps.create-app.outputs.app_id }}"; fi
-          
-          #if [ -z "$FINAL_APP_ID" ]; then
-          #  echo "::error::No App ID found from previous steps."
-          #  exit 1
-          #fi
-
           APP_OBJECT_ID=""
+          
           for i in {1..5}; do
             echo "Attempt $i to get Object ID for AppID: $FINAL_APP_ID..."
             # Use --filter as it's more robust for Service Principals
@@ -188,14 +179,6 @@ jobs:
           if [ -z "$APP_OBJECT_ID" ]; then
             echo "::error::Failed to resolve App Object ID for AppID: $FINAL_APP_ID"
             exit 1
-          fi
-          
-          echo "Fetching App URL from deployment 'main'..."
-          REDIRECT_URI=$(az deployment sub show --name main --query properties.outputs.redirectUri -o tsv)
-          
-          if [ -z "$REDIRECT_URI" ]; then
-             echo "::error::Could not find 'redirectUri' output in deployment."
-             exit 1
           fi
           
           REDIRECT_URI="${{ steps.deploy.outputs.redirectUri }}/login/oauth2/code"
