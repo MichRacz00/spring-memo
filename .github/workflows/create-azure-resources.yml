@@ -70,7 +70,7 @@ jobs:
         run: |
           SECRET=$(az keyvault secret show --vault-name ${{ steps.find-kv.outputs.kv_name }} --name "client-secret" --query value -o tsv)
           if [ -n "$SECRET" ]; then
-            # echo "::add-mask::$SECRET"
+            echo "::add-mask::$SECRET"
             echo "ad_client_secret=$SECRET" >> $GITHUB_OUTPUT
             echo "found=true" >> $GITHUB_OUTPUT
           else
@@ -108,7 +108,7 @@ jobs:
             NEW_SECRET=$(az ad app credential reset --id $FINAL_APP_ID --query password -o tsv) && break || sleep 10
           done
           
-          echo "::add-mask::$NEW_SECRET"
+          #echo "::add-mask::$NEW_SECRET"
           echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
 
       - name: Set Output Variables
