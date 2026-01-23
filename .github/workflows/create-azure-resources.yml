@@ -147,6 +147,7 @@ jobs:
             exit 1
           fi
           
+          # TODO: remove
           #echo "::add-mask::$SECRET"
           echo "ad_client_secret=$SECRET" >> $GITHUB_OUTPUT
           echo $SECRET
