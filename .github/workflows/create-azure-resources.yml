@@ -76,6 +76,29 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+      - name: Assign Key Vault Permissions
+        if: steps.find-kv.outputs.kv_name != ''
+        run: |
+          echo "Assigning 'Key Vault Secrets User' role to the Service Principal..."
+          
+          # Get the Service Principal's Object ID (The one currently running this action)
+          CLIENT_ID="${{ secrets.AZURE_CLIENT_ID }}"
+          SP_OBJECT_ID=$(az ad sp show --id $CLIENT_ID --query id -o tsv)
+
+          # Get the Key Vault's Resource ID
+          KV_ID=$(az keyvault show --name ${{ steps.find-kv.outputs.kv_name }} --resource-group ${{ env.RESOURCE_GROUP }} --query id -o tsv)
+
+          # Assign the Role (Idempotent: will just succeed if already exists)
+          # "Key Vault Secrets User" allows reading secrets (GET/LIST)
+          az role assignment create \
+            --assignee-object-id $SP_OBJECT_ID \
+            --role "Key Vault Secrets User" \
+            --scope $KV_ID \
+            --only-show-errors || echo "Role assignment might already exist or failed harmlessly."
+          
+          # Wait a moment for RBAC propagation
+          sleep 15
+
       - name: Fetch Existing Secret
         id: fetch-secret
         if: steps.find-kv.outputs.kv_name != ''
