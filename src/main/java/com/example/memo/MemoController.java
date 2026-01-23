@@ -56,7 +56,7 @@ public class MemoController {
 
         cosmosContainer.createItem(
                 newMemo,
-                new PartitionKey(newMemo.getId()),
+                new PartitionKey(newMemo.getUserId()),
                 new CosmosItemRequestOptions()
         );
 
