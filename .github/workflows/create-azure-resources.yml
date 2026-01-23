@@ -93,7 +93,6 @@ jobs:
       - name: Configure App Registration for Personal Accounts
         id: config-app
         run: |
-          # --- MISSING PART START ---
           FINAL_APP_ID="${{ steps.check-app.outputs.app_id }}"
           if [ -z "$FINAL_APP_ID" ]; then FINAL_APP_ID="${{ steps.create-app.outputs.app_id }}"; fi
           
@@ -101,7 +100,6 @@ jobs:
             echo "::error::No App ID found from previous steps."
             exit 1
           fi
-          # --- MISSING PART END ---
 
           for i in {1..5}; do
             echo "Attempt $i to get Object ID for AppID: $FINAL_APP_ID..."
