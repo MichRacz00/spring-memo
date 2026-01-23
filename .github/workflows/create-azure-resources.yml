@@ -123,7 +123,8 @@ jobs:
           
           # TODO: remove
           #echo "::add-mask::$NEW_SECRET"
-          echo "Secret":
+          echo "Secret"
+          echo ${#SECRET}
           echo $NEW_SECRET
           echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
 
