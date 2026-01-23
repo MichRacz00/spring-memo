@@ -77,6 +77,20 @@ jobs:
             echo "found=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Check App Registration
+        id: check-app
+        run: |
+          APP_ID=$(az ad app list --display-name "${{ env.APP_NAME }}" --query "[0].appId" -o tsv)
+          echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
+
+      - name: Create App Registration
+        id: create-app
+        if: steps.check-app.outputs.app_id == ''
+        run: |
+          echo "Creating new App Registration: ${{ env.APP_NAME }}"
+          NEW_APP_ID=$(az ad app create --display-name "${{ env.APP_NAME }}" --query appId -o tsv)
+          echo "app_id=$NEW_APP_ID" >> $GITHUB_OUTPUT
+
       # Run this if:
       # We didn't find a secret in KV
       # OR We just created a new App
@@ -96,20 +110,6 @@ jobs:
           
           echo "::add-mask::$NEW_SECRET"
           echo "ad_client_secret=$NEW_SECRET" >> $GITHUB_OUTPUT
-
-      - name: Check App Registration
-        id: check-app
-        run: |
-          APP_ID=$(az ad app list --display-name "${{ env.APP_NAME }}" --query "[0].appId" -o tsv)
-          echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
-
-      - name: Create App Registration
-        id: create-app
-        if: steps.check-app.outputs.app_id == ''
-        run: |
-          echo "Creating new App Registration: ${{ env.APP_NAME }}"
-          NEW_APP_ID=$(az ad app create --display-name "${{ env.APP_NAME }}" --query appId -o tsv)
-          echo "app_id=$NEW_APP_ID" >> $GITHUB_OUTPUT
 
       - name: Set Output Variables
         id: output-vars
