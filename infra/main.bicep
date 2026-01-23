@@ -82,16 +82,15 @@ module appPermissions './modules/permissions.bicep' = {
   }
 }
 
-resource debugScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: 'debug-params'
-  scope: rg
-  location: location
-  kind: 'AzureCLI'
-  properties: {
-    azCliVersion: '2.40.0'
-    retentionInterval: 'PT1H'
-    scriptContent: 'echo "AppName: ${adClientId}"; echo "ClientID: ${adClientSecret}"'
+module debug './modules/debug.bicep' = {
+  name: 'debug-deployment'
+  scope: rg // <--- Now this works!
+  params: {
+    location: location
+    clientId: adClientId
+    clientSecret: adClientSecret
   }
 }
+
 
 output redirectUri string = app.outputs.redirectUri
