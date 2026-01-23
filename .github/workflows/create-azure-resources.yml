@@ -162,6 +162,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Decode Secret
+        id: decode
         run: |
           ENCODED="${{ needs.prerequisites.outputs.ad_client_secret }}"
           DECODED=$(echo "$ENCODED" | base64 --decode)
@@ -188,7 +189,7 @@ jobs:
             appName=${{ env.APP_NAME }}
             containerImage=${{ needs.prerequisites.outputs.docker_image }}
             adClientId=${{ needs.prerequisites.outputs.ad_client_id }}
-            adClientSecret=${{ needs.prerequisites.outputs.ad_client_secret }}
+            adClientSecret=${{ steps.decode.outputs.ad_client_secret }}
           failOnStdErr: false
 
       - name: Configure App Registration for Personal Accounts
@@ -216,7 +217,8 @@ jobs:
             exit 1
           fi
           
-          REDIRECT_URI="${{ steps.deploy.outputs.redirectUri }}/login/oauth2/code"
+          BASE_URI="${{ steps.deploy.outputs.redirectUri }}"
+          REDIRECT_URI="$BASE_URI/login/oauth2/code"
           
           echo $REDIRECT_URI
           
@@ -226,7 +228,48 @@ jobs:
             --body "{
                 \"signInAudience\":\"AzureADandPersonalMicrosoftAccount\",
                 \"api\":{\"requestedAccessTokenVersion\":2},
-                \"web\": { \"redirectUris\": [\"$REDIRECT_URI\"] }
+                \"web\": {
+                  \"redirectUris\": [\"$REDIRECT_URI\"],
+                  \"logoutUrl\": \"$BASE_URI\"
+                }
             }"
           
           echo "App Registration configured successfully."
+
+  restart-container:
+    runs-on: ubuntu-latest
+    needs: [ prerequisites, deploy-infrastructure ]
+    steps:
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Restart Container App Revision
+        run: |
+          echo "Restarting Container App: ${{ env.APP_NAME }} in resource group: ${{ env.RESOURCE_GROUP }}"
+
+          # Get the latest revision name
+          # We sort by creation time desc to get the newest one
+          LATEST_REVISION=$(az containerapp revision list \
+            --name ${{ env.APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --query "sort_by([], &createdTime) | [-1].name" \
+            -o tsv)
+
+          if [ -z "$LATEST_REVISION" ]; then
+            echo "::error::Could not find a revision to restart."
+            exit 1
+          fi
+
+          echo "Found latest revision: $LATEST_REVISION"
+
+          # Restart the revision
+          az containerapp revision restart \
+            --name ${{ env.APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --revision $LATEST_REVISION
+
+          echo "Container App restarted successfully."
