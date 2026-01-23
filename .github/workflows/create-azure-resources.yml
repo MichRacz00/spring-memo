@@ -161,8 +161,10 @@ jobs:
           fi
           
           if [ "${{ steps.fetch-secret.outputs.found }}" == "true" ]; then
+            echo "Fetched secret from keyvault."
             SECRET="${{ steps.fetch-secret.outputs.ad_client_secret }}"
           else
+            echo "Detected newly generated secret."
             SECRET="${{ steps.gen-secret.outputs.ad_client_secret }}"
           fi
           
