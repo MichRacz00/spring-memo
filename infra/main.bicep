@@ -82,15 +82,5 @@ module appPermissions './modules/permissions.bicep' = {
   }
 }
 
-module debug 'debug.bicep' = {
-  name: 'debug-deployment'
-  scope: rg // <--- Now this works!
-  params: {
-    location: location
-    clientId: adClientId
-    clientSecret: adClientSecret
-  }
-}
-
 
 output redirectUri string = app.outputs.redirectUri
