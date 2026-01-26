@@ -16,4 +16,5 @@ jobs:
       - name: Check for required version label
         uses: yogevbd/enforce-label-action@2.1.0
         with:
+          REQUIRED_LABEL_ANY_DESCRIPTION: "Please classify this PR's version impact by adding one label: 'patch' (for bug fixes), 'minor' (for new features), or 'major' (for breaking changes)."
           REQUIRED_LABELS_ANY_SINGLE: "major,minor,patch"
