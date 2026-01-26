@@ -50,7 +50,7 @@ public class SecurityConfig  {
 
         return http.build();
 
-        // test
+        // test 2
     }
 
     private OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler() {
