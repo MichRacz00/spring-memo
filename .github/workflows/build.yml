@@ -1,4 +1,4 @@
-name: Build and Version
+name: Build
 
 on:
   pull_request:
