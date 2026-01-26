@@ -1,0 +1,19 @@
+name: Enforce Version
+
+on:
+  pull_request:
+    # Important: We need 'types' to re-run the check when a label is added/removed
+    types: [opened, synchronize, labeled, unlabeled]
+    branches:
+      - main
+
+jobs:
+  enforce-label:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Check for required version label
+        uses: yogevbd/enforce-label-action@v2.3.0
+        with:
+          REQUIRED_LABELS_ANY_SINGLE: "major,minor,patch"
