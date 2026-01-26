@@ -30,8 +30,6 @@ public class SecurityConfig  {
     @Value("/memo")
     private String[] allowedOrigins;
 
-    // Tset comment
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
