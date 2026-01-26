@@ -14,6 +14,6 @@ jobs:
       pull-requests: read
     steps:
       - name: Check for required version label
-        uses: yogevbd/enforce-label-action@v2
+        uses: yogevbd/enforce-label-action@2.1.0
         with:
           REQUIRED_LABELS_ANY_SINGLE: "major,minor,patch"
