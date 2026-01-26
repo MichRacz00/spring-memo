@@ -10,10 +10,16 @@ jobs:
   enforce-label:
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read
+      issues: write
+      pull-requests: write
     steps:
-      - name: Check for required version label
-        uses: yogevbd/enforce-label-action@2.1.0
+      - uses: mheap/github-action-required-labels@v5
         with:
-          REQUIRED_LABEL_ANY: "major,minor,patch"
-          REQUIRED_LABEL_COUNT: 1
+          mode: exactly
+          count: 1
+          labels: |
+            semver:patch
+            semver:minor
+            semver:major
+          add_comment: true
+          message: "This pull request is being blocked from merging, because a version label is missing. Please assign either patch, minor or major label."
