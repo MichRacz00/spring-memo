@@ -1,0 +1,19 @@
+name: Enforce Version
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled, unlabeled]
+    branches:
+      - main
+
+jobs:
+  enforce-label:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Check for required version label
+        uses: yogevbd/enforce-label-action@2.1.0
+        with:
+          REQUIRED_LABEL_ANY: "major,minor,patch"
+          REQUIRED_LABEL_COUNT: 1
