@@ -8,12 +8,12 @@ on:
       - main
 
 jobs:
-  enforce-label:
+  enforce-version:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
     steps:
       - name: Check for required version label
-        uses: yogevbd/enforce-label-action@v2.3.0
+        uses: yogevbd/enforce-label-action@v2
         with:
           REQUIRED_LABELS_ANY_SINGLE: "major,minor,patch"
