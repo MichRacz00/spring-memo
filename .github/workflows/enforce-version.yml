@@ -18,8 +18,8 @@ jobs:
           mode: exactly
           count: 1
           labels: |
-            semver:patch
-            semver:minor
-            semver:major
+            patch
+            minor
+            major
           add_comment: true
           message: "This pull request is being blocked from merging, because a version label is missing. Please assign either patch, minor or major label."
