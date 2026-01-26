@@ -17,8 +17,8 @@ permissions:
   contents: read
 
 env:
-  RESOURCE_GROUP: rg-memo
-  APP_NAME: memo
+  RESOURCE_GROUP: rg-memo-test
+  APP_NAME: memo-test
   LOCATION: polandcentral
   
 jobs:
