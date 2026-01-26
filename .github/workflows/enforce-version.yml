@@ -13,7 +13,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Check for required version label
-        uses: yochay/enforce-label-action@v2
+        uses: yogevbd/enforce-label-action@2.1.0
         with:
           REQUIRED_LABEL_ANY: "major,minor,patch"
           REQUIRED_LABEL_COUNT: 1
