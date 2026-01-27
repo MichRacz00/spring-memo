@@ -24,7 +24,7 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: 'kv-${appName}-${uniqueString(resourceGroup().id)}'
+  name: 'kv-${uniqueString(resourceGroup().id)}'
   location: location
   properties: {
     sku: { family: 'A', name: 'standard' }

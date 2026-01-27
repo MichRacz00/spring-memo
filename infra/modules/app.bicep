@@ -8,7 +8,7 @@ param appConfigName string
 
 // Log Analytics & Environment (required)
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
-  name: 'logs-${appName}'
+  name: 'logs-${appName}-${environment}'
   location: location
   properties: {
     sku: { name: 'PerGB2018' }

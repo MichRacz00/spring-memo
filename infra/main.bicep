@@ -3,6 +3,7 @@ targetScope = 'subscription'
 
 param containerImage string // Passed from GitHub Actions. Should be configured from github context.
 param appName string // Passed from GitHub Actions
+param environment string
 
 @secure()
 param adClientId string
@@ -10,8 +11,7 @@ param adClientId string
 param adClientSecret string
 
 param location string = 'polandcentral'
-param resourceGroupName string = 'rg-${appName}'
-param environment string = 'production'
+param resourceGroupName string = 'rg-${environment}-${appName}'
 
 // Create the Resource Group
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {

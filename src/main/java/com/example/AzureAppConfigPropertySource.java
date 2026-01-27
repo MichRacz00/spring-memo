@@ -50,8 +50,8 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
             System.out.println("Resolved Endpoint: " + endpoint);
             System.out.println("Resolved Environment: " + envName);
 
-            if (endpoint == null || endpoint.isBlank()) {
-                throw new IllegalStateException("Missing required configuration: " + APP_CONFIG_ENV_VAR);
+            if (endpoint == null || endpoint.isBlank() || envName == null || envName.isBlank()) {
+                throw new IllegalStateException("Missing required configuration: " + APP_CONFIG_ENV_VAR + " and " + ENVIRONMENT_VAR);
             }
 
             // 2. Setup Clients
@@ -61,12 +61,8 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
                     .credential(credential)
                     .buildClient();
 
-            // 3. Determine Production Status
-            boolean isProduction = "production".equalsIgnoreCase(envName);
-            System.out.println("isProduction set to: " + isProduction);
-
             // 4. Fetch Configuration
-            Properties properties = fetchConfiguration(client, credential, isProduction);
+            Properties properties = fetchConfiguration(client, credential, envName);
 
             if (!properties.isEmpty()) {
                 PropertiesPropertySource propertySource = new PropertiesPropertySource("azureAppConfig", properties);
@@ -105,16 +101,12 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
         return null;
     }
 
-    private Properties fetchConfiguration(ConfigurationClient client, TokenCredential credential, boolean isProduction) {
+    private Properties fetchConfiguration(ConfigurationClient client, TokenCredential credential, String envName) {
         Properties properties = new Properties();
         SettingSelector selector = new SettingSelector();
 
-        // Fetch keys with no label (\0) AND 'production' label if applicable
-        if (isProduction) {
-            selector.setLabelFilter("\0,production");
-        } else {
-            selector.setLabelFilter("\0");
-        }
+        String labelFilter = "\0," + envName;
+        selector.setLabelFilter(labelFilter);
 
         for (ConfigurationSetting setting : client.listConfigurationSettings(selector)) {
             if (setting.getKey() == null || setting.getValue() == null) continue;
@@ -138,9 +130,9 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
             if (!properties.containsKey(key)) {
                 properties.setProperty(key, value);
                 System.out.println("Loaded: " + key);
-            } else if (isProduction && "production".equals(label)) {
+            } else if (envName.equals(label)) {
                 properties.setProperty(key, value);
-                System.out.println("Overwriting with Production value: " + key);
+                System.out.println("Overwriting with " + envName + " value: " + key);
             }
         }
         return properties;
