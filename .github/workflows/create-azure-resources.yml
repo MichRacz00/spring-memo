@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: Set Dynamic Environment Variables
         run: |
-          RESOURCE_GROUP="rg-${{ env.APP_NAME }}-${{ github.ref_name }}"
+          RESOURCE_GROUP="rg-${{ github.ref_name }}-${{ env.APP_NAME }}"
           echo "RESOURCE_GROUP=${RESOURCE_GROUP}" >> $GITHUB_ENV
           echo "Set RESOURCE_GROUP to: ${RESOURCE_GROUP}"
 
@@ -188,7 +188,7 @@ jobs:
     steps:
       - name: Set Dynamic Environment Variables
         run: |
-          RESOURCE_GROUP="rg-${{ env.APP_NAME }}-${{ github.ref_name }}"
+          RESOURCE_GROUP="rg-${{ github.ref_name }}-${{ env.APP_NAME }}"
           echo "RESOURCE_GROUP=${RESOURCE_GROUP}" >> $GITHUB_ENV
           echo "Set RESOURCE_GROUP to: ${RESOURCE_GROUP}"
 
@@ -286,7 +286,7 @@ jobs:
     steps:
       - name: Set Dynamic Environment Variables
         run: |
-          RESOURCE_GROUP="rg-${{ env.APP_NAME }}-${{ github.ref_name }}"
+          RESOURCE_GROUP="rg-${{ github.ref_name }}-${{ env.APP_NAME }}"
           echo "RESOURCE_GROUP=${RESOURCE_GROUP}" >> $GITHUB_ENV
           echo "Set RESOURCE_GROUP to: ${RESOURCE_GROUP}"
 
