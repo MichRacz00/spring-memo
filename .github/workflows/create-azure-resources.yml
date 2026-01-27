@@ -124,7 +124,7 @@ jobs:
       - name: Check App Registration
         id: check-app
         run: |
-          APP_ID=$(az ad app list --display-name "${{ env.APP_NAME }}" --query "[0].appId" -o tsv)
+          APP_ID=$(az ad app list --display-name "${{ env.APP_NAME }}=${{ github.ref_name }}" --query "[0].appId" -o tsv)
           echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
 
       - name: Create App Registration

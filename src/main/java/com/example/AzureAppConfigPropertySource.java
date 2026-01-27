@@ -50,8 +50,8 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
             System.out.println("Resolved Endpoint: " + endpoint);
             System.out.println("Resolved Environment: " + envName);
 
-            if (endpoint == null || endpoint.isBlank()) {
-                throw new IllegalStateException("Missing required configuration: " + APP_CONFIG_ENV_VAR);
+            if (endpoint == null || endpoint.isBlank() || envName == null || envName.isBlank()) {
+                throw new IllegalStateException("Missing required configuration: " + APP_CONFIG_ENV_VAR + " and " + ENVIRONMENT_VAR);
             }
 
             // 2. Setup Clients
@@ -105,15 +105,8 @@ public class AzureAppConfigPropertySource implements EnvironmentPostProcessor {
         Properties properties = new Properties();
         SettingSelector selector = new SettingSelector();
 
-        switch (envName) {
-            case "production":
-                selector.setLabelFilter("\0,production");
-                break;
-            case "development":
-                selector.setLabelFilter("\0,development");
-            default:
-                selector.setLabelFilter("\0");
-        }
+        String labelFilter = "\0," + envName;
+        selector.setLabelFilter(labelFilter);
 
         for (ConfigurationSetting setting : client.listConfigurationSettings(selector)) {
             if (setting.getKey() == null || setting.getValue() == null) continue;
