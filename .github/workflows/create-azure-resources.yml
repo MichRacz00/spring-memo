@@ -237,7 +237,7 @@ jobs:
           template: ./infra/main.bicep
           deploymentName: main
           parameters: >
-            environment=${ENVIRONMENT_TAG}
+            environment=${{ env.ENVIRONMENT_TAG }}
             appName=${{ env.APP_NAME }}
             containerImage=${{ needs.prerequisites.outputs.docker_image }}
             adClientId=${{ needs.prerequisites.outputs.ad_client_id }}
