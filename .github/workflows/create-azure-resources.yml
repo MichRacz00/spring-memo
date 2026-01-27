@@ -19,14 +19,12 @@ permissions:
 env:
   APP_NAME: memo
   LOCATION: polandcentral
+  RESOURCE_GROUP: ""
   
 jobs:
   prerequisites:
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
-
-    env:
-      RESOURCE_GROUP: rg-${{ env.APP_NAME }}-${{ job.environment }}
 
     runs-on: ubuntu-latest
     outputs:
@@ -35,6 +33,12 @@ jobs:
       docker_image: ${{ steps.docker.outputs.docker_image }}
 
     steps:
+      - name: Set Dynamic Environment Variables
+        run: |
+          RESOURCE_GROUP="rg-${{ env.APP_NAME }}-${{ job.environment }}"
+          echo "RESOURCE_GROUP=${RESOURCE_GROUP}" >> $GITHUB_ENV
+          echo "Set RESOURCE_GROUP to: ${RESOURCE_GROUP}"
+
       - name: Azure Login
         uses: azure/login@v2
         with:
