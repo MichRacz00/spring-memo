@@ -25,7 +25,6 @@ jobs:
   prerequisites:
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
-
     runs-on: ubuntu-latest
     outputs:
       ad_client_id: ${{ steps.output-vars.outputs.ad_client_id }}
