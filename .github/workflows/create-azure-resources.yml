@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 env:
-  RESOURCE_GROUP: rg-memo
+  RESOURCE_GROUP: rg-production-memo
   APP_NAME: memo
   LOCATION: polandcentral
   
@@ -210,6 +210,7 @@ jobs:
           template: ./infra/main.bicep
           deploymentName: main
           parameters: >
+            environment=${{ vars.ENVIRONMENT || 'development' }}
             appName=${{ env.APP_NAME }}
             containerImage=${{ needs.prerequisites.outputs.docker_image }}
             adClientId=${{ needs.prerequisites.outputs.ad_client_id }}
