@@ -24,7 +24,8 @@ env:
 jobs:
   prerequisites:
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+      #name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+      name: 'development'
 
     runs-on: ubuntu-latest
     outputs:
@@ -51,7 +52,6 @@ jobs:
         env:
           REPOSITORY: ${{ github.repository }}
         run: |
-          echo ${{ env.RESOURCE_GROUP }}
           REPO_LC=${REPOSITORY,,} # Convert repository name to lowercase
           IMAGE_URL=ghcr.io/${REPO_LC}:latest
           echo "docker_image=$IMAGE_URL" >> $GITHUB_OUTPUT
