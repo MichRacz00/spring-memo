@@ -110,7 +110,6 @@ jobs:
 
       - name: Generate New Secret
         id: gen-secret
-        if: steps.fetch-secret.outputs.found != 'true'
         run: |
           # Determine which App ID to use (Existing or Newly Created)
           FINAL_APP_ID="${{ steps.check-app.outputs.app_id }}"
