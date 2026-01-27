@@ -24,8 +24,7 @@ env:
 jobs:
   prerequisites:
     environment:
-      #name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
-      name: 'development'
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
 
     runs-on: ubuntu-latest
     outputs:
@@ -36,7 +35,7 @@ jobs:
     steps:
       - name: Set Dynamic Environment Variables
         run: |
-          RESOURCE_GROUP="rg-${{ env.APP_NAME }}-${{ job.environment }}"
+          RESOURCE_GROUP="rg-${{ env.APP_NAME }}-${{ github.ref_name }}"
           echo "RESOURCE_GROUP=${RESOURCE_GROUP}" >> $GITHUB_ENV
           echo "Set RESOURCE_GROUP to: ${RESOURCE_GROUP}"
 
