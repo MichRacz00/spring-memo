@@ -1,4 +1,4 @@
-package com.example.memo;
+package com.example;
 
 import com.azure.spring.cloud.autoconfigure.implementation.aad.security.AadWebApplicationHttpSecurityConfigurer;
 import org.slf4j.Logger;
