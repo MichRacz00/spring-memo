@@ -17,9 +17,9 @@ permissions:
   contents: read
 
 env:
-  RESOURCE_GROUP: rg-production-memo
   APP_NAME: memo
   LOCATION: polandcentral
+  RESOURCE_GROUP: rg-test
   
 jobs:
   prerequisites:
@@ -42,6 +42,7 @@ jobs:
         env:
           REPOSITORY: ${{ github.repository }}
         run: |
+          echo ${{ vars.ENVIRONMENT }}
           REPO_LC=${REPOSITORY,,} # Convert repository name to lowercase
           IMAGE_URL=ghcr.io/${REPO_LC}:latest
           echo "docker_image=$IMAGE_URL" >> $GITHUB_OUTPUT
@@ -49,6 +50,7 @@ jobs:
       - name: Find Key Vault
         id: find-kv
         run: |
+          echo ${{ env.RESOURCE_GROUP }}
           KV_NAME=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} --query "[0].name" -o tsv || echo "")
           echo "kv_name=$KV_NAME" >> $GITHUB_OUTPUT
 
