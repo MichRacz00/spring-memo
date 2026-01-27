@@ -129,15 +129,15 @@ jobs:
       - name: Check App Registration
         id: check-app
         run: |
-          APP_ID=$(az ad app list --display-name "${{ env.APP_NAME }}-${{ github.ref_name }}" --query "[0].appId" -o tsv)
+          APP_ID=$(az ad app list --display-name "${{ env.APP_NAME }}-${ENVIRONMENT_TAG}" --query "[0].appId" -o tsv)
           echo "app_id=$APP_ID" >> $GITHUB_OUTPUT
 
       - name: Create App Registration
         id: create-app
         if: steps.check-app.outputs.app_id == ''
         run: |
-          echo "Creating new App Registration: ${{ env.APP_NAME }}-${{ github.ref_name }}"
-          NEW_APP_ID=$(az ad app create --display-name "${{ env.APP_NAME }}-${{ github.ref_name }}" --query appId -o tsv)
+          echo "Creating new App Registration: ${{ env.APP_NAME }}-${ENVIRONMENT_TAG}"
+          NEW_APP_ID=$(az ad app create --display-name "${{ env.APP_NAME }}-${ENVIRONMENT_TAG}" --query appId -o tsv)
           echo "app_id=$NEW_APP_ID" >> $GITHUB_OUTPUT
 
       # Run this if:
@@ -237,7 +237,7 @@ jobs:
           template: ./infra/main.bicep
           deploymentName: main
           parameters: >
-            environment=${{ github.ref_name || 'undefined' }}
+            environment=${ENVIRONMENT_TAG}
             appName=${{ env.APP_NAME }}
             containerImage=${{ needs.prerequisites.outputs.docker_image }}
             adClientId=${{ needs.prerequisites.outputs.ad_client_id }}
