@@ -4,7 +4,7 @@ description: This workflow is the "Big Bang" setup. It ensures that the target R
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, development]
     paths:
       - 'infra/**' # Run when infrastructure files change
 
