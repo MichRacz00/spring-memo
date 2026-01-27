@@ -192,11 +192,12 @@ jobs:
     needs: prerequisites
     steps:
       - name: Set Dynamic Environment Variables
+        id: set_env
         run: |
           if [ "${{ github.ref_name }}" == "main" ]; then
-            ENVIRONMENT_TAG="production"
+            echo "tag=production" >> $GITHUB_OUTPUT
           else
-            ENVIRONMENT_TAG="development"
+            echo "tag=development" >> $GITHUB_OUTPUT
           fi
           RESOURCE_GROUP="rg-${ENVIRONMENT_TAG}-${{ env.APP_NAME }}"
           echo "RESOURCE_GROUP=${RESOURCE_GROUP}" >> $GITHUB_ENV
@@ -237,7 +238,7 @@ jobs:
           template: ./infra/main.bicep
           deploymentName: main
           parameters: >
-            environment=${{ env.ENVIRONMENT_TAG }}
+            environment=${{ steps.set_env.outputs.tag }}
             appName=${{ env.APP_NAME }}
             containerImage=${{ needs.prerequisites.outputs.docker_image }}
             adClientId=${{ needs.prerequisites.outputs.ad_client_id }}
