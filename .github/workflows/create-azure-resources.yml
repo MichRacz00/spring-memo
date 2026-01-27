@@ -195,11 +195,14 @@ jobs:
         id: set_env
         run: |
           if [ "${{ github.ref_name }}" == "main" ]; then
-            echo "tag=production" >> $GITHUB_OUTPUT
+            TAG="production"
           else
-            echo "tag=development" >> $GITHUB_OUTPUT
+            TAG="development"
           fi
-          RESOURCE_GROUP="rg-${ENVIRONMENT_TAG}-${{ env.APP_NAME }}"
+          
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          
+          RESOURCE_GROUP="rg-${TAG}-${{ env.APP_NAME }}"
           echo "RESOURCE_GROUP=${RESOURCE_GROUP}" >> $GITHUB_ENV
           echo "Set RESOURCE_GROUP to: ${RESOURCE_GROUP}"
 
