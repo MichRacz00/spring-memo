@@ -145,8 +145,12 @@ jobs:
             SECRET="${{ steps.gen-secret.outputs.ad_client_secret }}"
           fi
           
+          echo "::add-mask::$SECRET"
+          
           # Secrets passed between jobs must be encoded
           ENCODED_SECRET=$(echo -n "$SECRET" | base64 -w 0)
+          echo "::add-mask::ENCODED_SECRET"
+          
           echo "ad_client_secret=$ENCODED_SECRET" >> $GITHUB_OUTPUT
 
   deploy-infrastructure:
