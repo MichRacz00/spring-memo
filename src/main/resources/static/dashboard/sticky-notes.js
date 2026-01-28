@@ -14,7 +14,7 @@ async function init() {
 // Function to create and display a sticky note
 function createStickyNote(noteData) {
     const noteDiv = document.createElement("div");
-    noteDiv.classList.add("sticky-note");
+    noteDiv.classList.add(noteData.type);
 
     // Set position from data
     noteDiv.style.left = noteData.x + "px";

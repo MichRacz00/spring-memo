@@ -54,8 +54,6 @@ public class MemoController {
         newMemo.setId(id.toString());
         newMemo.setUserId(userId);
 
-        System.out.println(newMemo.getType());
-
         cosmosContainer.createItem(
                 newMemo,
                 new PartitionKey(newMemo.getUserId()),

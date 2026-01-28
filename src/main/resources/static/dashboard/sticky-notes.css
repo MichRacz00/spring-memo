@@ -1,4 +1,4 @@
-.sticky-note {
+.StickyNote {
     position: absolute;
     width: 200px;
     height: 150px;
@@ -9,15 +9,15 @@
     cursor: move;
 }
 
-.sticky-note h4 {
+.StickyNote h4 {
     margin: 0 0 5px 0;
 }
 
-.sticky-note p {
+.StickyNote p {
     margin: 0;
 }
 
-.sticky-note button {
+.StickyNote button {
     position: absolute;
     top: 5px;
     right: 5px;
@@ -31,6 +31,6 @@
     color: #a00;
 }
 
-.sticky-note button:hover {
+.StickyNote button:hover {
     color: #ff0000;
 }
