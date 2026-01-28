@@ -26,7 +26,6 @@ public class SecurityConfig  {
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
 
-    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
     @Value("/memo")
     private String[] allowedOrigins;
 
