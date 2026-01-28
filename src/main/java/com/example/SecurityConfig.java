@@ -1,6 +1,8 @@
 package com.example;
 
 import com.azure.spring.cloud.autoconfigure.implementation.aad.security.AadWebApplicationHttpSecurityConfigurer;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,12 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
 
 @Configuration
 @EnableWebSecurity
@@ -26,9 +32,8 @@ public class SecurityConfig  {
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
 
-    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
-    @Value("/memo")
-    private String[] allowedOrigins;
+    @Value("${spring.cloud.azure.active-directory.post-logout-redirect-uri}")
+    private String postLogoutRedirectUri;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,8 +44,10 @@ public class SecurityConfig  {
                         .requestMatchers("/memo/**", "/dashboard/**", "/ui/**").authenticated()
                         .anyRequest().permitAll()
                 )
+
                 .oauth2Login(oauth2 -> oauth2
                         .defaultSuccessUrl("/dashboard", true)
+
                 ).logout(logout -> logout
                         .logoutSuccessHandler(oidcLogoutSuccessHandler())
                         .invalidateHttpSession(true)
@@ -51,15 +58,11 @@ public class SecurityConfig  {
         return http.build();
     }
 
-    private OidcClientInitiatedLogoutSuccessHandler oidcLogoutSuccessHandler() {
-        OidcClientInitiatedLogoutSuccessHandler successHandler =
+    private LogoutSuccessHandler oidcLogoutSuccessHandler() {
+        OidcClientInitiatedLogoutSuccessHandler handler =
                 new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
-
-        // This tells Spring to tell Microsoft: "Send the user back to {baseUrl} after logout"
-        // {baseUrl} is automatically resolved to your app's root URL (e.g. https://myapp.azurecontainerapps.io)
-        successHandler.setPostLogoutRedirectUri("{baseUrl}");
-
-        return successHandler;
+        handler.setPostLogoutRedirectUri(postLogoutRedirectUri);
+        return handler;
     }
 
     @Bean

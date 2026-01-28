@@ -249,8 +249,7 @@ jobs:
                 \"signInAudience\":\"AzureADandPersonalMicrosoftAccount\",
                 \"api\":{\"requestedAccessTokenVersion\":2},
                 \"web\": {
-                  \"redirectUris\": [\"$REDIRECT_URI\"],
-                  \"logoutUrl\": \"$BASE_URI\"
+                  \"redirectUris\": [\"$BASE_URI\", \"$REDIRECT_URI\"]
                 }
             }"
           
