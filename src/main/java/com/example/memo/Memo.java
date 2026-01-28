@@ -27,6 +27,6 @@ public class Memo {
     public int getY() { return y; }
     public void setY(int y) { this.y = y; }
 
-    public String getType() { return type.toString(); };
-    public void setType(String t) { this.type = Type.fromString(t); };
+    Type getType() { return type; };
+    public void setType(Type t) { this.type = t; };
 }

@@ -1,5 +1,8 @@
 package com.example.memo;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,6 +21,7 @@ public enum Type {
 
     Type(String displayName) { this.displayName = displayName; }
 
+    @JsonCreator
     public static Type fromString(String name) {
         if (name == null) return null;
         Type t = MAP.get(name.trim().toLowerCase());
@@ -27,5 +31,6 @@ public enum Type {
     }
 
     @Override
+    @JsonValue
     public String toString() { return displayName; }
 }

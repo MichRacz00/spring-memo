@@ -101,7 +101,8 @@ newNoteButton.addEventListener("click", async () => {
         title: titleInput.value,
         content: contentInput.value,
         x: window.innerWidth / 2,
-        y: window.innerHeight / 2
+        y: window.innerHeight / 2,
+        type: "StickyNote"
     };
 
     const response = await fetch("/memo/", {
