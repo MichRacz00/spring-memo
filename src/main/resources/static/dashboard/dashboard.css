@@ -31,3 +31,9 @@ button#newNoteButton {
 button#newNoteButton:hover {
     background-color: #45a049;
 }
+
+/* active state (sheet‑size) */
+.type-toggle.active {
+    background: #4CAF50;
+    color: #fff;
+}
