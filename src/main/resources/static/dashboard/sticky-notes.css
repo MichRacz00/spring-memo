@@ -45,25 +45,27 @@
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     cursor: move;
 
+    line-height: 1.3em;
     background-image: repeating-linear-gradient(
-        to bottom,
-        #000 0,
-        #000 0.08em,
-        transparent 0.08em,
-        transparent 1.2em
+      to bottom,                 /* vertical direction */
+      #000000 0,                 /* line starts at 0 */
+      #000000 1px,               /* line ends at 1px (the line itself) */
+      transparent 1px,           /* transparent starts right after the line */
+      transparent 1.3em          /* block ends at the line‑height */
     );
+    background-size: 100% 1.3em;
 }
 
 .BigSheet h4 {
-    display: block;             /* block‑level so it fills the width */
+    display: block;
     width: 100%;
-    box-sizing: border-box;     /* include padding in the width */
+    box-sizing: border-box;
     font-size: 1.8rem;
     font-weight: 700;
     margin: 0 0 10px 0;
     padding: 5px 10px;
     color: #333;
-    background: #fffff0;        /* paint over the lines */
-    position: relative;         /* enables z-index if needed */
-    z-index: 1;                 /* keep it above the lines */
+    background: #fffff0;
+    position: relative;
+    z-index: 1;
 }
