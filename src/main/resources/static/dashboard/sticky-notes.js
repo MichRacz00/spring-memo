@@ -36,6 +36,7 @@ function createStickyNote(noteData) {
 
     const title = document.createElement("h4");
     title.innerText = noteData.title;
+
     const content = document.createElement("p");
     content.innerText = noteData.content;
 

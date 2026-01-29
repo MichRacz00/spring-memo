@@ -53,3 +53,17 @@
         transparent 1.2em
     );
 }
+
+.BigSheet h4 {
+    display: block;             /* block‑level so it fills the width */
+    width: 100%;
+    box-sizing: border-box;     /* include padding in the width */
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    padding: 5px 10px;
+    color: #333;
+    background: #fffff0;        /* paint over the lines */
+    position: relative;         /* enables z-index if needed */
+    z-index: 1;                 /* keep it above the lines */
+}
