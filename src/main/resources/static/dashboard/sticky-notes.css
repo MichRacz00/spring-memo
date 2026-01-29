@@ -37,11 +37,19 @@
 
 .BigSheet {
     position: absolute;
-    width: 300px;
-    height: 500px;
-    background-color: #fffb88;
+    width: 350px;
+    height: 450px;
+    background-color: #fffff0;
     border: 1px solid #e0e0e0;
     padding: 10px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     cursor: move;
+
+    background-image: repeating-linear-gradient(
+        to bottom,
+        #000 0,
+        #000 0.08em,
+        transparent 0.08em,
+        transparent 1.2em
+    );
 }
