@@ -1,23 +1,4 @@
-.StickyNote {
-    position: absolute;
-    width: 200px;
-    height: 150px;
-    background-color: #fffb88;
-    border: 1px solid #e0e0e0;
-    padding: 10px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    cursor: move;
-}
-
-.StickyNote h4 {
-    margin: 0 0 5px 0;
-}
-
-.StickyNote p {
-    margin: 0;
-}
-
-.StickyNote button {
+.note button {
     position: absolute;
     top: 5px;
     right: 5px;
@@ -31,6 +12,36 @@
     color: #a00;
 }
 
-.StickyNote button:hover {
+.note button:hover {
     color: #ff0000;
+}
+
+.note h4 {
+    margin: 0 0 5px 0;
+}
+
+.note p {
+    margin: 0;
+}
+
+.StickyNote {
+    position: absolute;
+    width: 200px;
+    height: 150px;
+    background-color: #fffb88;
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: move;
+}
+
+.BigSheet {
+    position: absolute;
+    width: 300px;
+    height: 500px;
+    background-color: #fffb88;
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: move;
 }

@@ -14,6 +14,7 @@ async function init() {
 // Function to create and display a sticky note
 function createStickyNote(noteData) {
     const noteDiv = document.createElement("div");
+    noteDiv.classList.add("note");
     noteDiv.classList.add(noteData.type);
 
     // Set position from data
@@ -102,7 +103,7 @@ newNoteButton.addEventListener("click", async () => {
         content: contentInput.value,
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,
-        type: "StickyNote"
+        type: currentNoteType
     };
 
     const response = await fetch("/memo/", {

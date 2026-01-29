@@ -50,7 +50,6 @@ toggleNoteTypeButton.addEventListener('click', () => {
     }
 });
 
-
 async function setBackground() {
     try {
         const response = await fetch("/ui/background", {
