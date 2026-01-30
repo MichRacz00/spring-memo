@@ -24,6 +24,12 @@
         <textarea id="noteContent" placeholder="Note content"></textarea>
         <button id="newNoteButton">New note please!</button>
 
+        <div class="creation-controls">
+            <button class="type-toggle" id="chooseStickyNote" data-type="StickyNote">Sticky Note</button>
+            <button class="type-toggle" id="chooseNotepad" data-type="BigSheet">Notepad</button>
+            <button class="type-toggle" id="choosePlaceholder" data-type="Undefined">Coming soon...</button>
+        </div>
+
         <button id="typeToggleButton" class="type-toggle">
             Sheet-size note
         </button>
@@ -31,5 +37,6 @@
 
     <script src="/dashboard/sticky-notes.js"></script>
     <script src="/dashboard/script.js"></script>
+    <script src="/dashboard/selection-controls.js"></script>
 </body>
 </html>
