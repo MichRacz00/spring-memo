@@ -44,17 +44,27 @@
     padding: 10px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     cursor: move;
-
     line-height: 1.3em;
+}
+
+.BigSheet::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    display: block;
+
     background-image: repeating-linear-gradient(
-      to bottom,
-      #000000 0,
-      #000000 1px,
-      transparent 1px,
-      transparent 1.3em
+        to bottom,
+        #000 0,
+        #000 1px,
+        transparent 1px,
+        transparent 1.3em
     );
+
     background-size: 100% 1.3em;
-    background-position: 0px 0.4em;
+    background-position: 0 0.4em;
+    background-clip: content-box;
+    clip-path: inset(10px); /* matches .BigSheet's padding */
 }
 
 .BigSheet h4 {
