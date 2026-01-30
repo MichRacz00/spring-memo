@@ -26,6 +26,9 @@ selectorButtons.forEach(button => {
 });
 
 function updateActiveButton() {
+    noteTitleInput.classList.add(`size-${currentNoteType}`);
+    noteContentInput.classList.add(`size-${currentNoteType}`);
+
     selectorButtons.forEach(button => {
         if (button.dataset.type === currentNoteType) {
             button.classList.add('active');
