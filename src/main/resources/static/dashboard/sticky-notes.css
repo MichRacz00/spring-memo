@@ -38,10 +38,10 @@
 .BigSheet {
     position: absolute;
     width: 350px;
-    height: 450px;
+    height: 500px;
     background-color: #fffff0;
     border: 1px solid #e0e0e0;
-    padding: 10px;
+    padding: 10px 10px 10px 40px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     cursor: move;
     line-height: 1.3em;
@@ -72,6 +72,8 @@
     inset: 0;
     display: block;
 
+    padding: 10px 10px 10px 40px;
+
     background-image: repeating-linear-gradient(
         to bottom,
         #000 0,
@@ -92,7 +94,7 @@
     box-sizing: border-box;
     font-size: 1.8rem;
     font-weight: 700;
-    margin: 0 0 10px 0;
+    margin: 0 0 10px -35px;
     padding: 5px 10px;
     color: #333;
     background: #fffff0;
