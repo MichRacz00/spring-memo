@@ -1,4 +1,4 @@
-package com.example.memo;
+package com.example;
 
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 

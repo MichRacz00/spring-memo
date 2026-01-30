@@ -14,7 +14,9 @@ async function init() {
 // Function to create and display a sticky note
 function createStickyNote(noteData) {
     const noteDiv = document.createElement("div");
-    noteDiv.classList.add("sticky-note");
+    noteDiv.classList.add("note");
+
+    noteDiv.classList.add(noteData.type);
 
     // Set position from data
     noteDiv.style.left = noteData.x + "px";
@@ -35,6 +37,7 @@ function createStickyNote(noteData) {
 
     const title = document.createElement("h4");
     title.innerText = noteData.title;
+
     const content = document.createElement("p");
     content.innerText = noteData.content;
 
@@ -101,7 +104,8 @@ newNoteButton.addEventListener("click", async () => {
         title: titleInput.value,
         content: contentInput.value,
         x: window.innerWidth / 2,
-        y: window.innerHeight / 2
+        y: window.innerHeight / 2,
+        type: currentNoteType
     };
 
     const response = await fetch("/memo/", {

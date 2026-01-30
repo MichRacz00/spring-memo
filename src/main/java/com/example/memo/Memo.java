@@ -7,6 +7,7 @@ public class Memo {
     private String content;
     private int x;
     private int y;
+    private Type type;
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -25,4 +26,7 @@ public class Memo {
 
     public int getY() { return y; }
     public void setY(int y) { this.y = y; }
+
+    public Type getType() { return type; };
+    public void setType(Type t) { this.type = t; };
 }
