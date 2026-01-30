@@ -46,8 +46,24 @@
     cursor: move;
     line-height: 1.3em;
 
-    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 8px, black 10px);
-    mask: radial-gradient(circle at 50% 50%, transparent 8px, black 10px);
+    --hole1: radial-gradient(circle at 20px 15%, transparent 8px, black 10px);
+    --hole2: radial-gradient(circle at 20px 38%, transparent 8px, black 10px);
+    --hole3: radial-gradient(circle at 20px 62%, transparent 8px, black 10px);
+    --hole4: radial-gradient(circle at 20px 85%, transparent 8px, black 10px);
+
+    -webkit-mask:
+        var(--hole1),
+        var(--hole2),
+        var(--hole3),
+        var(--hole4);
+    mask:
+        var(--hole1),
+        var(--hole2),
+        var(--hole3),
+        var(--hole4);
+
+    -webkit-mask-composite: intersect;
+    mask-composite: intersect;
 }
 
 .BigSheet::before {
