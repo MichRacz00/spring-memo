@@ -45,6 +45,9 @@
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     cursor: move;
     line-height: 1.3em;
+
+    -webkit-mask: radial-gradient(circle at 50% 50%, transparent 8px, black 10px);
+    mask: radial-gradient(circle at 50% 50%, transparent 8px, black 10px);
 }
 
 .BigSheet::before {
