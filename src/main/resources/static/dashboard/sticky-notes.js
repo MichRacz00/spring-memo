@@ -15,6 +15,7 @@ async function init() {
 function createStickyNote(noteData) {
     const noteDiv = document.createElement("div");
     noteDiv.classList.add("note");
+
     noteDiv.classList.add(noteData.type);
 
     // Set position from data
