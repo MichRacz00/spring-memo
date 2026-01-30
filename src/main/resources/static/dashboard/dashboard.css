@@ -1,4 +1,9 @@
 
+.center-container {
+    justify-content: flex-end;
+    padding-bottom: 10%;
+}
+
 /* ---------- Input fields ---------- */
 .input-fields {
     display: flex;
