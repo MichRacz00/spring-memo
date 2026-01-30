@@ -1,23 +1,4 @@
-.sticky-note {
-    position: absolute;
-    width: 200px;
-    height: 150px;
-    background-color: #fffb88;
-    border: 1px solid #e0e0e0;
-    padding: 10px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    cursor: move;
-}
-
-.sticky-note h4 {
-    margin: 0 0 5px 0;
-}
-
-.sticky-note p {
-    margin: 0;
-}
-
-.sticky-note button {
+.note button {
     position: absolute;
     top: 5px;
     right: 5px;
@@ -29,8 +10,95 @@
     line-height: 1;
     padding: 0;
     color: #a00;
+    margin-top: -5px;
 }
 
-.sticky-note button:hover {
+.note button:hover {
     color: #ff0000;
+}
+
+.note h4 {
+    margin: 0 0 5px 0;
+}
+
+.note p {
+    margin: 0;
+}
+
+.StickyNote {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background-color: #fffb88;
+    border: 1px solid #e0e0e0;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: move;
+}
+
+.BigSheet {
+    position: absolute;
+    width: 350px;
+    height: 500px;
+    background-color: #fffff0;
+    border: 1px solid #e0e0e0;
+    padding: 10px 10px 10px 40px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: move;
+    line-height: 1.3em;
+
+    --hole1: radial-gradient(circle at 20px 15%, transparent 8px, black 10px);
+    --hole2: radial-gradient(circle at 20px 38%, transparent 8px, black 10px);
+    --hole3: radial-gradient(circle at 20px 62%, transparent 8px, black 10px);
+    --hole4: radial-gradient(circle at 20px 85%, transparent 8px, black 10px);
+
+    -webkit-mask:
+        var(--hole1),
+        var(--hole2),
+        var(--hole3),
+        var(--hole4);
+    mask:
+        var(--hole1),
+        var(--hole2),
+        var(--hole3),
+        var(--hole4);
+
+    -webkit-mask-composite: intersect;
+    mask-composite: intersect;
+}
+
+.BigSheet::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    display: block;
+
+    padding: 10px 10px 10px 40px;
+
+    background-image: repeating-linear-gradient(
+        to bottom,
+        #000 0,
+        #000 1px,
+        transparent 1px,
+        transparent 1.3em
+    );
+
+    background-size: 100% 1.3em;
+    background-position: 0 0.4em;
+    background-clip: content-box;
+    clip-path: inset(10px); /* matches .BigSheet's padding */
+}
+
+.BigSheet h4 {
+    display: block;
+    width: 110%;
+    box-sizing: border-box;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0 0 10px -35px;
+    padding: 5px 10px;
+    color: #333;
+    background: #fffff0;
+    position: relative;
+    z-index: 1;
 }

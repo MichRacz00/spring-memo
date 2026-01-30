@@ -1,14 +1,45 @@
 
+.center-container {
+    justify-content: flex-end;
+    padding-bottom: 10%;
+}
+
 /* ---------- Input fields ---------- */
-.center-container input,
-.center-container textarea {
-    margin-top: 10px;
+.input-fields {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-fields input,
+.input-fields textarea {
+    margin-top: 4px;
     padding: 8px;
-    width: 250px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+    resize: none;
+}
+
+.center-container input.size-StickyNote {
+    width: 200px;
+    height: 30px;
+}
+
+.center-container textarea.size-StickyNote {
+    width: 200px;
+    height: 170px;
+}
+
+.center-container input.size-BigSheet {
+    width: 350px;
+    height: 30px;
+}
+
+.center-container textarea.size-BigSheet {
+    width: 350px;
+    height: 470px;
 }
 
 .top-right-container {
@@ -18,16 +49,21 @@
     right: 20px;
 }
 
-.center-container textarea {
-    resize: vertical;
-    height: 80px;
-}
-
-button#newNoteButton {
+.create-note-button {
     color: white;
     background-color: #4CAF50;
 }
 
-button#newNoteButton:hover {
+.create-note-button:hover {
     background-color: #45a049;
+}
+
+.type-toggle:hover {
+    background-color: #35a2c1;
+    color: white;
+}
+
+.type-toggle.active {
+    background: #2c99bb;
+    color: white;
 }
