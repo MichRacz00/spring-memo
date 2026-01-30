@@ -29,10 +29,15 @@ button#newNoteButton {
 }
 
 button#newNoteButton:hover {
-    background-color: #45a049;
+    background-color: #35a2c1;
+}
+
+.type-toggle:hover {
+    background-color: #35a2c1;
+    color: white;
 }
 
 .type-toggle.active {
-    background: #4CAF50;
-    color: #fff;
+    background: #2c99bb;
+    color: white;
 }
