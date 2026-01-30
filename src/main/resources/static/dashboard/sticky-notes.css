@@ -47,13 +47,14 @@
 
     line-height: 1.3em;
     background-image: repeating-linear-gradient(
-      to bottom,                 /* vertical direction */
-      #000000 0,                 /* line starts at 0 */
-      #000000 1px,               /* line ends at 1px (the line itself) */
-      transparent 1px,           /* transparent starts right after the line */
-      transparent 1.3em          /* block ends at the line‑height */
+      to bottom,
+      #000000 0,
+      #000000 1px,
+      transparent 1px,
+      transparent 1.3em
     );
     background-size: 100% 1.3em;
+    background-position: 0px 0.4em;
 }
 
 .BigSheet h4 {
