@@ -10,6 +10,7 @@
     line-height: 1;
     padding: 0;
     color: #a00;
+    margin-top: 0;
 }
 
 .note button:hover {
