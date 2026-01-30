@@ -25,21 +25,3 @@ function updateActiveButton() {
 }
 
 updateActiveButton();
-
-const toggleNoteTypeButton = document.getElementById("typeToggleButton");
-
-toggleNoteTypeButton.addEventListener('click', () => {
-    // Flip the state
-    currentNoteType = (currentNoteType === 'StickyNote') ? 'BigSheet' : 'StickyNote';
-
-    // Update the button’s visual state
-    if (currentNoteType === 'BigSheet') {
-        toggleNoteTypeButton.classList.add('active');   // sheet‑size
-        toggleNoteTypeButton.textContent = 'Sticky‑size note';
-        noteContent.classList.add('sheet-size'); // resize textarea
-    } else {
-        toggleNoteTypeButton.classList.remove('active');
-        toggleNoteTypeButton.textContent = 'Sheet‑size note';
-        noteContent.classList.remove('sheet-size');
-    }
-});
