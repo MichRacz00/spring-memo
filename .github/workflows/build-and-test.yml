@@ -6,6 +6,9 @@ on:
       - main
       - development
 
+permissions:
+  id-token: write
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest
