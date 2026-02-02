@@ -9,9 +9,8 @@ on:
 permissions:
   id-token: write
   contents: write
+  pull-requests: write
   actions: write
-
-  #
 
 jobs:
   run-tests:
