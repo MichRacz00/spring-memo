@@ -2,6 +2,7 @@ package com.example.memo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author AI
  */
-class MemoUnitTest {
+@SpringBootTest
+class MemoTest {
 
     /* --------------------------------------------------------------------- */
     /* 1.  Getter / Setter round‑trip for every field                       */

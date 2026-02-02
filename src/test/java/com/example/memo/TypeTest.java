@@ -3,6 +3,7 @@ package com.example.memo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -13,7 +14,8 @@ import static org.assertj.core.api.Assertions.*;
  *
  * @author AI
  */
-class TypeUnitTest {
+@SpringBootTest
+class TypeTest {
 
     /* --------------------------------------------------------------------- */
     /* 1.  toString() – the JSON value exposed by the enum                   */
