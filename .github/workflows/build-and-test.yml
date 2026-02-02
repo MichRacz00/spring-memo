@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Run tests & generate coverage
-        run: mvn -B clean verify
+        run: mvn -B clean verify -e
 
       - name: Add coverage to PR
         id: jacoco
