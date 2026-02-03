@@ -41,9 +41,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 70
           min-coverage-changed-files: 90
+          fail-if-below: true
 
       - name: Upload JaCoCo report
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: jacoco-html
           path: target/site/jacoco
