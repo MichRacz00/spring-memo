@@ -54,12 +54,12 @@ jobs:
         if: |
           (steps.jacoco.outputs.coverage-overall != '' && 
            steps.jacoco.outputs.coverage-overall < 70) ||
-          (steps.jacoco.outputs.coverage-changed != '' && 
-           steps.jacoco.outputs.coverage-changed < 90)
+          (steps.jacoco.outputs.coverage-changed-files != '' && 
+           steps.jacoco.outputs.coverage-changed-files < 90)
         run: |
           echo "Coverage thresholds not met."
           echo "Overall coverage : ${{ steps.jacoco.outputs.coverage-overall }} % (minimum 70 %)"
-          echo "Changed‑files coverage : ${{ steps.jacoco.outputs.coverage-changed }} % (minimum 90 %)"
+          echo "Changed‑files coverage : ${{ steps.jacoco.outputs.coverage-changed-files }} % (minimum 90 %)"
           exit 1   # non‑zero exit code → job marked as failed
 
   build:
