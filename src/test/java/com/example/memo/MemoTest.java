@@ -99,4 +99,53 @@ class MemoTest {
         assertThat(m.getContent()).isNull();
         assertThat(m.getType()).isNull();
     }
+
+    /* --------------------------------------------------------------------- */
+    /* 3.  Constructor tests                                               */
+    /* --------------------------------------------------------------------- */
+
+    @Test
+    @DisplayName("default constructor creates a blank Memo")
+    void defaultConstructor() {
+        Memo m = new Memo();
+        assertThat(m.getId()).isNull();
+        assertThat(m.getUserId()).isNull();
+        assertThat(m.getTitle()).isNull();
+        assertThat(m.getContent()).isNull();
+        assertThat(m.getX()).isZero();
+        assertThat(m.getY()).isZero();
+        assertThat(m.getType()).isNull();
+    }
+
+    @Test
+    @DisplayName("two‑arg constructor sets userId, type and zeroes x/y")
+    void twoArgConstructor() {
+        Memo m = new Memo("u1", Type.BIG_SHEET);
+        assertThat(m.getUserId()).isEqualTo("u1");
+        assertThat(m.getType()).isEqualTo(Type.BIG_SHEET);
+        assertThat(m.getX()).isZero();
+        assertThat(m.getY()).isZero();
+    }
+
+    @Test
+    @DisplayName("full‑arg constructor sets all fields")
+    void fullArgConstructor() {
+        Memo m = new Memo(
+                "id-1",
+                "u1",
+                "Title",
+                "Body",
+                10,
+                20,
+                Type.STICKY_NOTE
+        );
+
+        assertThat(m.getId()).isEqualTo("id-1");
+        assertThat(m.getUserId()).isEqualTo("u1");
+        assertThat(m.getTitle()).isEqualTo("Title");
+        assertThat(m.getContent()).isEqualTo("Body");
+        assertThat(m.getX()).isEqualTo(10);
+        assertThat(m.getY()).isEqualTo(20);
+        assertThat(m.getType()).isEqualTo(Type.STICKY_NOTE);
+    }
 }
