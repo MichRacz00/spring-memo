@@ -41,7 +41,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 70
           min-coverage-changed-files: 90
-          fail-if-below: true
 
       - name: Upload JaCoCo report
         uses: actions/upload-artifact@v4
@@ -50,6 +49,18 @@ jobs:
           name: jacoco-html
           path: target/site/jacoco
           retention-days: 7
+
+      - name: Fail job when coverage thresholds are not satisfied
+        if: |
+          (steps.jacoco.outputs.coverage-overall != '' && 
+           steps.jacoco.outputs.coverage-overall < 70) ||
+          (steps.jacoco.outputs.coverage-changed != '' && 
+           steps.jacoco.outputs.coverage-changed < 90)
+        run: |
+          echo "Coverage thresholds not met."
+          echo "Overall coverage : ${{ steps.jacoco.outputs.coverage-overall }} % (minimum 70 %)"
+          echo "Changed‑files coverage : ${{ steps.jacoco.outputs.coverage-changed }} % (minimum 90 %)"
+          exit 1   # non‑zero exit code → job marked as failed
 
   build:
     runs-on: ubuntu-latest
