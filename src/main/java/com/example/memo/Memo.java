@@ -29,4 +29,24 @@ public class Memo {
 
     public Type getType() { return type; };
     public void setType(Type t) { this.type = t; };
+
+    public Memo() {}
+
+    public Memo(String userId, Type type) {
+        this.userId = userId;
+        this.type = type;
+        this.x = 0;
+        this.y = 0;
+    }
+
+    public Memo(String id, String userId, String title, String content,
+                int x, int y, Type type) {
+        this.id = id;
+        this.userId = userId;
+        this.title = title;
+        this.content = content;
+        this.x = x;
+        this.y = y;
+        this.type = type;
+    }
 }
