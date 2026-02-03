@@ -10,14 +10,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
+import javax.swing.text.Utilities;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -55,27 +58,59 @@ class MemoControllerTest {
     /* 1.  GET /all                                                        */
     /* --------------------------------------------------------------------- */
 
-    @Test
-    @DisplayName("getAll: returns memos for the authenticated user")
-    void getAll_returnsMemos() {
-        Memo memo1 = new Memo("1", USER_ID, "Title1", "Content1", 10, 20, Type.STICKY_NOTE);
-        Memo memo2 = new Memo("2", USER_ID, "Title2", "Content2", 30, 40, Type.BIG_SHEET);
+    @Nested
+    @DisplayName("getAll")
+    class getAll {
+        @Test
+        @DisplayName("getAll: returns memos for the authenticated user")
+        void getAll_returnsMemos() {
+            Memo memo1 = new Memo("1", USER_ID, "Title1", "Content1", 10, 20, Type.STICKY_NOTE);
+            Memo memo2 = new Memo("2", USER_ID, "Title2", "Content2", 30, 40, Type.BIG_SHEET);
 
-        // Mock the CosmosPagedIterable and its stream method
-        @SuppressWarnings("unchecked")
-        CosmosPagedIterable<Memo> pagedIterable = mock(CosmosPagedIterable.class);
-        when(cosmosContainer.queryItems(any(SqlQuerySpec.class),
-                any(CosmosQueryRequestOptions.class), eq(Memo.class)))
-                .thenReturn(pagedIterable);
-        when(pagedIterable.stream()).thenReturn(Arrays.asList(memo1, memo2).stream());
+            // Mock the CosmosPagedIterable and its stream method
+            @SuppressWarnings("unchecked")
+            CosmosPagedIterable<Memo> pagedIterable = mock(CosmosPagedIterable.class);
+            when(cosmosContainer.queryItems(any(SqlQuerySpec.class),
+                    any(CosmosQueryRequestOptions.class), eq(Memo.class)))
+                    .thenReturn(pagedIterable);
+            when(pagedIterable.stream()).thenReturn(Arrays.asList(memo1, memo2).stream());
 
-        // Act
-        var result = controller.getAll(oidcUser);
+            // Act
+            var result = controller.getAll(oidcUser);
 
-        // Assert
-        assertThat(result).containsExactly(memo1, memo2);
-        verify(cosmosContainer).queryItems(any(SqlQuerySpec.class),
-                any(CosmosQueryRequestOptions.class), eq(Memo.class));
+            // Assert
+            assertThat(result).containsExactly(memo1, memo2);
+            verify(cosmosContainer).queryItems(any(SqlQuerySpec.class),
+                    any(CosmosQueryRequestOptions.class), eq(Memo.class));
+        }
+
+        @Test
+        @DisplayName("getAll: returns empty list when user has no memos")
+        void getAll_returnsEmptyListForUserWithNoMemos() {
+            // Create memos that belong to USER_ID (not the authenticated user)
+            Memo userMemo1 = new Memo("1", USER_ID, "User Title1", "User Content1", 10, 20, Type.STICKY_NOTE);
+            Memo userMemo2 = new Memo("2", USER_ID, "User Title2", "User Content2", 30, 40, Type.BIG_SHEET);
+
+            // Mock the CosmosPagedIterable to return empty stream for OTHER_USER_ID
+            // (This simulates the SQL query filtering by OTHER_USER_ID and finding no results)
+            @SuppressWarnings("unchecked")
+            CosmosPagedIterable<Memo> pagedIterable = mock(CosmosPagedIterable.class);
+            when(cosmosContainer.queryItems(any(SqlQuerySpec.class),
+                    any(CosmosQueryRequestOptions.class), eq(Memo.class)))
+                    .thenReturn(pagedIterable);
+            // Return empty stream since OTHER_USER_ID has no memos
+            when(pagedIterable.stream()).thenReturn(Stream.empty());
+
+            // Act
+            var result = controller.getAll(oidcUser);
+
+            // Assert - should be empty list
+            assertThat(result).isEmpty();
+
+            // Verify the query was made
+            verify(cosmosContainer).queryItems(any(SqlQuerySpec.class),
+                    any(CosmosQueryRequestOptions.class), eq(Memo.class));
+        }
     }
 
     /* --------------------------------------------------------------------- */
