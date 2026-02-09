@@ -1,4 +1,6 @@
 
+let nextZIndex = 0;
+
 async function init() {
     const response = await fetch("/memo/all", {
         method: "GET"
@@ -55,6 +57,9 @@ function makeNoteDraggable(noteDiv, noteData) {
     noteDiv.onmousedown = function(event) {
         let shiftX = event.clientX - noteDiv.getBoundingClientRect().left;
         let shiftY = event.clientY - noteDiv.getBoundingClientRect().top;
+
+        nextZIndex++;
+        noteDiv.style.zIndex = nextZIndex;
 
         function moveAt(pageX, pageY) {
             noteDiv.style.left = pageX - shiftX + "px";
